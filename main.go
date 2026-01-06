@@ -1,19 +1,20 @@
 package main
 
 import (
-	"interlocutr/comments"
+	"interlocutr/comments/app"
+	"interlocutr/comments/http"
 	_ "interlocutr/docs"
 
 	"github.com/labstack/echo/v4"
 	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
-func NewServer() *echo.Echo {
+func NewServer(app *app.App) *echo.Echo {
 	e := echo.New()
 
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
-	e.GET("/:site/:resource/comments", comments.GetComments)
-	e.POST("/:site/:resource/comments", comments.CreateComment)
+
+	http.NewCommentsHandlers(e, app)
 
 	return e
 }
@@ -31,7 +32,7 @@ func NewServer() *echo.Echo {
 // @externalDocs.description  OpenAPI
 // @externalDocs.url          https://swagger.io/resources/open-api/
 func main() {
-	e := NewServer()
+	e := NewServer(app.NewApp())
 
 	e.Logger.Fatal(e.Start(":8080"))
 }

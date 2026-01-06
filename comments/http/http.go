@@ -1,24 +1,27 @@
-package comments
+package http
 
 import (
+	"interlocutr/comments/app"
 	"net/http"
-	"time"
 
 	"github.com/labstack/echo/v4"
 )
 
-type CreateCommentRequest struct {
-	Author string `json:"author"`
-	Text string `json:"text"`
+
+type CommentsHandlers struct {
+	app *app.App
 }
 
-type CommentsResponse struct {
-	Author string `json:"author"`
-	Text string `json:"text"`
-	CreatedAt time.Time `json:"created_at"`
-}
+func NewCommentsHandlers(e *echo.Echo, app *app.App) CommentsHandlers {
+	h := CommentsHandlers{
+		app: app,
+	}
 
-var storage []Comment
+	e.GET("/:site/:resource/comments", h.GetComments)
+	e.POST("/:site/:resource/comments", h.CreateComment)
+
+	return h
+}
 
 // GetComments godoc
 // @Summary      Get comments
@@ -30,18 +33,8 @@ var storage []Comment
 // @Success      200       {object}  []CommentsResponse
 // Failure      400       {object}  echo.HTTPError
 // @Router       /{site}/{resource}/comments [get]
-func GetComments(c echo.Context) error {
-	result := make([]CommentsResponse, len(storage))
-	
-	for i, comment := range storage {
-		result[i] = CommentsResponse{
-			Author: comment.Author,
-			Text: comment.Text,
-			CreatedAt: comment.CreatedAt,
-		}
-	}
-
-	return c.JSON(http.StatusOK, result)
+func (h *CommentsHandlers) GetComments(c echo.Context) error {
+	return c.JSON(http.StatusOK, h.app.GetComments())
 }
 
 // CreateComment godoc
@@ -56,23 +49,13 @@ func GetComments(c echo.Context) error {
 // @Success      201       {object}  CommentsResponse
 // Failure      400       {object}  echo.HTTPError
 // @Router       /{site}/{resource}/comments [post]
-func CreateComment(c echo.Context) error {
-	comment := new(CreateCommentRequest)
+func (h *CommentsHandlers) CreateComment(c echo.Context) error {
+	comment := new(app.CreateCommentRequest)
 	if err := c.Bind(comment); err != nil {
 		return err
 	}
 
-	storage = append(storage, Comment{
-		Author: comment.Author,
-		Text: comment.Text,
-		CreatedAt: time.Date(2026, 1, 6, 01, 12, 12, 0, time.UTC),
-	})
+	h.app.CreateComment(*comment)
 
 	return c.JSON(http.StatusCreated, nil)
-}
-
-type Comment struct {
-	Author string
-	Text string
-	CreatedAt time.Time
 }

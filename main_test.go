@@ -2,10 +2,12 @@ package main_test
 
 import (
 	main "interlocutr"
+	"interlocutr/comments/app"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -15,7 +17,11 @@ func TestCreateAndGetComments(t *testing.T) {
 	t.Parallel()
 
 	// Arrange
-	e := main.NewServer()
+	now, _ := time.Parse(time.RFC3339, "2026-01-06T01:12:12Z")
+	app := app.NewApp()
+	app.FreezeTime(now)
+
+	e := main.NewServer(app)
 
 	createJson := `{
 		"author": "Michał",

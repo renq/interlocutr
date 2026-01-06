@@ -1,0 +1,14 @@
+###
+
+POST http://localhost:8080/test/page-1/comments
+Content-Type: application/json
+
+{
+    "author": "Michał 2",
+    "text": "Jakiś tekst 2"
+}
+
+###
+
+GET http://localhost:8080/test/page-1/comments
+Content-Type: application/json
