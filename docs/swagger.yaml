@@ -9,6 +9,13 @@ definitions:
       text:
         type: string
     type: object
+  main.CreateCommentRequest:
+    properties:
+      author:
+        type: string
+      text:
+        type: string
+    type: object
 externalDocs:
   description: OpenAPI
   url: https://swagger.io/resources/open-api/
@@ -23,9 +30,18 @@ info:
 paths:
   /{site}/{resource}/comments:
     get:
-      consumes:
-      - application/json
       description: get comments for site and resource
+      parameters:
+      - description: Site identifier
+        in: path
+        name: site
+        required: true
+        type: string
+      - description: Resource identifier
+        in: path
+        name: resource
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -36,6 +52,37 @@ paths:
               $ref: '#/definitions/main.CommentsResponse'
             type: array
       summary: Get comments
+      tags:
+      - comments
+    post:
+      consumes:
+      - application/json
+      description: Create comment for site and resource
+      parameters:
+      - description: Site identifier
+        in: path
+        name: site
+        required: true
+        type: string
+      - description: Resource identifier
+        in: path
+        name: resource
+        required: true
+        type: string
+      - description: Comment to create
+        in: body
+        name: comment
+        required: true
+        schema:
+          $ref: '#/definitions/main.CreateCommentRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/main.CommentsResponse'
+      summary: Create comment
       tags:
       - comments
 swagger: "2.0"

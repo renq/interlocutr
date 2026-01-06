@@ -1,12 +1,11 @@
 package main_test
 
 import (
-	"encoding/json"
 	main "interlocutr"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -18,29 +17,43 @@ func TestCreateAndGetComments(t *testing.T) {
 	// Arrange
 	e := main.NewServer()
 
-	req := httptest.NewRequest(http.MethodGet, "/test-site/1/comments", nil)
+	createJson := `{
+		"author": "Michał",
+		"text": "Jakiś tekst"
+	}`
+	req := httptest.NewRequest(http.MethodPost, "/test-site/1/comments", strings.NewReader(createJson))
+	req.Header.Set("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
 
-	expectedResponse := []main.CommentsResponse{
-		{
-			Author: "Michał",
-			Text: "Jakiś tekst",
-			CreatedAt: time.Date(2026, 1, 6, 01, 12, 12, 0, time.UTC),
-		},
-	}
+	// Act
+	e.ServeHTTP(rec, req)
+
+	// Assert 1
+	assert.Equal(t, http.StatusCreated, rec.Code)
+
+
+	// Arrange 2
+	req = httptest.NewRequest(http.MethodGet, "/test-site/1/comments", nil)
+	rec = httptest.NewRecorder()
+
+	expectedJson := `[{
+		"author": "Michał",
+		"text": "Jakiś tekst",
+		"created_at": "2026-01-06T01:12:12Z"
+	}]`
 
 	// Act
 	e.ServeHTTP(rec, req)
 
 	// Assert
 	assert.Equal(t, http.StatusOK, rec.Code)
-	assert.Equal(t, expectedResponse, getResponse[[]main.CommentsResponse](t, rec))
+	assert.JSONEq(t, expectedJson, rec.Body.String())
 }
 
 
-func getResponse[T any](t *testing.T, recorder *httptest.ResponseRecorder) T {
-	var s *T
-	assert.NoError(t, json.Unmarshal(recorder.Body.Bytes(), &s))
+// func getResponse[T any](t *testing.T, recorder *httptest.ResponseRecorder) T {
+// 	var s *T
+// 	assert.NoError(t, json.Unmarshal(recorder.Body.Bytes(), &s))
 
-	return *s
-}
+// 	return *s
+// }

@@ -23,6 +23,43 @@ const docTemplate = `{
         "/{site}/{resource}/comments": {
             "get": {
                 "description": "get comments for site and resource",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "comments"
+                ],
+                "summary": "Get comments",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Site identifier",
+                        "name": "site",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Resource identifier",
+                        "name": "resource",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/main.CommentsResponse"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create comment for site and resource",
                 "consumes": [
                     "application/json"
                 ],
@@ -32,15 +69,37 @@ const docTemplate = `{
                 "tags": [
                     "comments"
                 ],
-                "summary": "Get comments",
-                "responses": {
-                    "200": {
-                        "description": "OK",
+                "summary": "Create comment",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Site identifier",
+                        "name": "site",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Resource identifier",
+                        "name": "resource",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Comment to create",
+                        "name": "comment",
+                        "in": "body",
+                        "required": true,
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/main.CommentsResponse"
-                            }
+                            "$ref": "#/definitions/main.CreateCommentRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/main.CommentsResponse"
                         }
                     }
                 }
@@ -55,6 +114,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "created_at": {
+                    "type": "string"
+                },
+                "text": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.CreateCommentRequest": {
+            "type": "object",
+            "properties": {
+                "author": {
                     "type": "string"
                 },
                 "text": {
