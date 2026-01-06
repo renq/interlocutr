@@ -8,28 +8,20 @@ import (
 	"testing"
 	"time"
 
-	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 )
 
 
-func TestGetComments(t *testing.T) {
+func TestCreateAndGetComments(t *testing.T) {
 	t.Parallel()
 
-	e := echo.New()
+	// Arrange
+	e := main.NewServer()
+
 	req := httptest.NewRequest(http.MethodGet, "/test-site/1/comments", nil)
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-
 	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
 
-	err := main.GetUser(c)
-
-	assert.NoError(t, err)
-	assert.Equal(t, http.StatusOK, rec.Code)
-
-	var got []main.CommentsResponse
-	expected := []main.CommentsResponse{
+	expectedResponse := []main.CommentsResponse{
 		{
 			Author: "Michał",
 			Text: "Jakiś tekst",
@@ -37,6 +29,18 @@ func TestGetComments(t *testing.T) {
 		},
 	}
 
-	assert.NoError(t, json.Unmarshal(rec.Body.Bytes(), &got))
-	assert.Equal(t, expected, got)
+	// Act
+	e.ServeHTTP(rec, req)
+
+	// Assert
+	assert.Equal(t, http.StatusOK, rec.Code)
+	assert.Equal(t, expectedResponse, getResponse[[]main.CommentsResponse](t, rec))
+}
+
+
+func getResponse[T any](t *testing.T, recorder *httptest.ResponseRecorder) T {
+	var s *T
+	assert.NoError(t, json.Unmarshal(recorder.Body.Bytes(), &s))
+
+	return *s
 }

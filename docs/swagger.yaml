@@ -1,0 +1,41 @@
+basePath: /api/v1
+definitions:
+  main.CommentsResponse:
+    properties:
+      author:
+        type: string
+      created_at:
+        type: string
+      text:
+        type: string
+    type: object
+externalDocs:
+  description: OpenAPI
+  url: https://swagger.io/resources/open-api/
+host: localhost:8080
+info:
+  contact:
+    email: michal@lipek.net
+  license:
+    name: MIT
+  title: Interlocutr API
+  version: "1.0"
+paths:
+  /{site}/{resource}/comments:
+    get:
+      consumes:
+      - application/json
+      description: get comments for site and resource
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/main.CommentsResponse'
+            type: array
+      summary: Get comments
+      tags:
+      - comments
+swagger: "2.0"
