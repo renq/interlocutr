@@ -7,11 +7,11 @@ type Clock struct {
 }
 
 func (c Clock) Now() time.Time {
-	if (c.currentTime != nil) {
+	if c.currentTime != nil {
 		return *c.currentTime
 	}
-	
-	return time.Now().UTC() 
+
+	return time.Now().UTC()
 }
 
 func NewClock() *Clock {

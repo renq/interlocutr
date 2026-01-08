@@ -12,7 +12,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-
 func TestCreateAndGetComments(t *testing.T) {
 	t.Parallel()
 
@@ -37,7 +36,6 @@ func TestCreateAndGetComments(t *testing.T) {
 	// Assert 1
 	assert.Equal(t, http.StatusCreated, rec.Code)
 
-
 	// Arrange 2
 	req = httptest.NewRequest(http.MethodGet, "/test-site/1/comments", nil)
 	rec = httptest.NewRecorder()
@@ -55,7 +53,6 @@ func TestCreateAndGetComments(t *testing.T) {
 	assert.Equal(t, http.StatusOK, rec.Code)
 	assert.JSONEq(t, expectedJson, rec.Body.String())
 }
-
 
 // func getResponse[T any](t *testing.T, recorder *httptest.ResponseRecorder) T {
 // 	var s *T

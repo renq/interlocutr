@@ -1,0 +1,27 @@
+assert_lefthook_installed: true
+
+pre-commit:
+  parallel: true
+  commands:
+    fmt:
+      run: go fmt ./...
+      root: .
+    lint:
+      run: golangci-lint run
+      root: .
+    test:
+      run: go test ./...
+      root: .
+
+lints:
+  parallel: true
+  commands:
+    fmt:
+      run: go fmt ./...
+      root: .
+    lint:
+      run: golangci-lint run
+      root: .
+    test:
+      run: go test ./...
+      root: .

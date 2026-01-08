@@ -7,7 +7,6 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-
 type CommentsHandlers struct {
 	app *app.App
 }
@@ -55,7 +54,10 @@ func (h *CommentsHandlers) CreateComment(c echo.Context) error {
 		return err
 	}
 
-	h.app.CreateComment(*comment)
+	error := h.app.CreateComment(*comment)
+	if error != nil {
+		return error
+	}
 
 	return c.JSON(http.StatusCreated, nil)
 }

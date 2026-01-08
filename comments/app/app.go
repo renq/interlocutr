@@ -6,8 +6,8 @@ import (
 )
 
 type App struct {
-	clock *infrastructure.Clock
-	storage []Comment
+	clock   *infrastructure.Clock
+	storage Storage
 }
 
 func (a *App) FreezeTime(time time.Time) {
@@ -16,6 +16,7 @@ func (a *App) FreezeTime(time time.Time) {
 
 func NewApp() *App {
 	return &App{
-		clock: infrastructure.NewClock(),
+		clock:   infrastructure.NewClock(),
+		storage: &InMemoryStorage{},
 	}
 }

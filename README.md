@@ -8,9 +8,27 @@ Before I forgot:
 
 ### Run tests:
 
-```gotestsum --format testdox --watch```
+```
+gotestsum --format testdox --watch
+```
 
 ### Run server with live reload
 
-```air```
+```
+air
+```
 
+### Generate swagger
+
+```
+swag init
+```
+
+## Quality tools
+
+```
+go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+go install github.com/evilmartians/lefthook@latest
+
+lefthook run lints
+```

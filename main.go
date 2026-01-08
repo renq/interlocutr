@@ -19,7 +19,6 @@ func NewServer(app *app.App) *echo.Echo {
 	return e
 }
 
-
 // @title           Interlocutr API
 // @version         1.0
 // @contact.email  michal@lipek.net
