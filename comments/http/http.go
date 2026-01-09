@@ -50,6 +50,7 @@ func (h *CommentsHandlers) GetComments(c echo.Context) error {
 // @Router       /{site}/{resource}/comments [post]
 func (h *CommentsHandlers) CreateComment(c echo.Context) error {
 	comment := new(app.CreateCommentRequest)
+
 	if err := c.Bind(comment); err != nil {
 		return err
 	}

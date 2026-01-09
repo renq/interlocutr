@@ -17,6 +17,6 @@ func (a *App) FreezeTime(time time.Time) {
 func NewApp() *App {
 	return &App{
 		clock:   infrastructure.NewClock(),
-		storage: &InMemoryStorage{},
+		storage: NewInMemoryStorage(),
 	}
 }

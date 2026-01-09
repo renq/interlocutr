@@ -4,14 +4,14 @@ pre-commit:
   parallel: true
   commands:
     fmt:
+      glob: "*.go"
       run: go fmt ./...
-      root: .
     lint:
+      glob: "*.go"
       run: golangci-lint run
-      root: .
     test:
+      glob: "*.go"
       run: go test ./...
-      root: .
 
 lints:
   parallel: true
