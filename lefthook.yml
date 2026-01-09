@@ -9,6 +9,9 @@ pre-commit:
     lint:
       glob: "*.go"
       run: golangci-lint run
+    swag:
+      glob: "*/http/*.go"
+      run: swag init .
     test:
       glob: "*.go"
       run: go test ./...

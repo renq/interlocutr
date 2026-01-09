@@ -1,7 +1,7 @@
 package app_test
 
 import (
-	"interlocutr/comments/app"
+	"interlocutr/internal/comments/app"
 	"testing"
 	"time"
 

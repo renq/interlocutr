@@ -1,9 +1,9 @@
 package main
 
 import (
-	"interlocutr/comments/app"
-	"interlocutr/comments/http"
 	_ "interlocutr/docs"
+	"interlocutr/internal/comments/app"
+	"interlocutr/internal/comments/http"
 
 	"github.com/labstack/echo/v4"
 	echoSwagger "github.com/swaggo/echo-swagger"
@@ -21,12 +21,11 @@ func NewServer(app *app.App) *echo.Echo {
 
 // @title           Interlocutr API
 // @version         1.0
-// @contact.email  michal@lipek.net
+// @contact.email   michal@lipek.net
+// @license.name    MIT
 
-// @license.name  MIT
-
-// @host      localhost:8080
-// @BasePath  /api/v1
+// @host            localhost:8080
+// @BasePath        /
 
 // @externalDocs.description  OpenAPI
 // @externalDocs.url          https://swagger.io/resources/open-api/

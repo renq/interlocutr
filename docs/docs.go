@@ -20,7 +20,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/{site}/{resource}/comments": {
+        "/api/{site}/{resource}/comments": {
             "get": {
                 "description": "get comments for site and resource",
                 "produces": [
@@ -52,8 +52,14 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/main.CommentsResponse"
+                                "$ref": "#/definitions/app.CommentsResponse"
                             }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/infrastructure.ErrorResponse"
                         }
                     }
                 }
@@ -91,7 +97,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/main.CreateCommentRequest"
+                            "$ref": "#/definitions/app.CreateCommentRequest"
                         }
                     }
                 ],
@@ -99,7 +105,13 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/main.CommentsResponse"
+                            "$ref": "#/definitions/app.CommentsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/infrastructure.ErrorResponse"
                         }
                     }
                 }
@@ -107,7 +119,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "main.CommentsResponse": {
+        "app.CommentsResponse": {
             "type": "object",
             "properties": {
                 "author": {
@@ -121,13 +133,27 @@ const docTemplate = `{
                 }
             }
         },
-        "main.CreateCommentRequest": {
+        "app.CreateCommentRequest": {
             "type": "object",
             "properties": {
                 "author": {
                     "type": "string"
                 },
+                "resource": {
+                    "type": "string"
+                },
+                "site": {
+                    "type": "string"
+                },
                 "text": {
+                    "type": "string"
+                }
+            }
+        },
+        "infrastructure.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
                     "type": "string"
                 }
             }
@@ -143,7 +169,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "localhost:8080",
-	BasePath:         "/api/v1",
+	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "Interlocutr API",
 	Description:      "",

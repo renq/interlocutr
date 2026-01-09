@@ -2,7 +2,7 @@ package main_test
 
 import (
 	main "interlocutr"
-	"interlocutr/comments/app"
+	"interlocutr/internal/comments/app"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -26,7 +26,7 @@ func TestCreateAndGetComments(t *testing.T) {
 		"author": "Michał",
 		"text": "Jakiś tekst"
 	}`
-	req := httptest.NewRequest(http.MethodPost, "/test-site/1/comments", strings.NewReader(createJson))
+	req := httptest.NewRequest(http.MethodPost, "/api/test-site/1/comments", strings.NewReader(createJson))
 	req.Header.Set("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
 
@@ -37,7 +37,7 @@ func TestCreateAndGetComments(t *testing.T) {
 	assert.Equal(t, http.StatusCreated, rec.Code)
 
 	// Arrange 2
-	req = httptest.NewRequest(http.MethodGet, "/test-site/1/comments", nil)
+	req = httptest.NewRequest(http.MethodGet, "/api/test-site/1/comments", nil)
 	rec = httptest.NewRecorder()
 
 	expectedJson := `[{

@@ -11,9 +11,9 @@
         "version": "1.0"
     },
     "host": "localhost:8080",
-    "basePath": "/api/v1",
+    "basePath": "/",
     "paths": {
-        "/{site}/{resource}/comments": {
+        "/api/{site}/{resource}/comments": {
             "get": {
                 "description": "get comments for site and resource",
                 "produces": [
@@ -45,8 +45,14 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/main.CommentsResponse"
+                                "$ref": "#/definitions/app.CommentsResponse"
                             }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/infrastructure.ErrorResponse"
                         }
                     }
                 }
@@ -84,7 +90,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/main.CreateCommentRequest"
+                            "$ref": "#/definitions/app.CreateCommentRequest"
                         }
                     }
                 ],
@@ -92,7 +98,13 @@
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/main.CommentsResponse"
+                            "$ref": "#/definitions/app.CommentsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/infrastructure.ErrorResponse"
                         }
                     }
                 }
@@ -100,7 +112,7 @@
         }
     },
     "definitions": {
-        "main.CommentsResponse": {
+        "app.CommentsResponse": {
             "type": "object",
             "properties": {
                 "author": {
@@ -114,13 +126,27 @@
                 }
             }
         },
-        "main.CreateCommentRequest": {
+        "app.CreateCommentRequest": {
             "type": "object",
             "properties": {
                 "author": {
                     "type": "string"
                 },
+                "resource": {
+                    "type": "string"
+                },
+                "site": {
+                    "type": "string"
+                },
                 "text": {
+                    "type": "string"
+                }
+            }
+        },
+        "infrastructure.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
                     "type": "string"
                 }
             }

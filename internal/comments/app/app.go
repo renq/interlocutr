@@ -1,7 +1,7 @@
 package app
 
 import (
-	"interlocutr/infrastructure"
+	"interlocutr/internal/infrastructure"
 	"time"
 )
 

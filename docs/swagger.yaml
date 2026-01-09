@@ -1,6 +1,6 @@
-basePath: /api/v1
+basePath: /
 definitions:
-  main.CommentsResponse:
+  app.CommentsResponse:
     properties:
       author:
         type: string
@@ -9,11 +9,20 @@ definitions:
       text:
         type: string
     type: object
-  main.CreateCommentRequest:
+  app.CreateCommentRequest:
     properties:
       author:
         type: string
+      resource:
+        type: string
+      site:
+        type: string
       text:
+        type: string
+    type: object
+  infrastructure.ErrorResponse:
+    properties:
+      message:
         type: string
     type: object
 externalDocs:
@@ -28,7 +37,7 @@ info:
   title: Interlocutr API
   version: "1.0"
 paths:
-  /{site}/{resource}/comments:
+  /api/{site}/{resource}/comments:
     get:
       description: get comments for site and resource
       parameters:
@@ -49,8 +58,12 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/main.CommentsResponse'
+              $ref: '#/definitions/app.CommentsResponse'
             type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/infrastructure.ErrorResponse'
       summary: Get comments
       tags:
       - comments
@@ -74,14 +87,18 @@ paths:
         name: comment
         required: true
         schema:
-          $ref: '#/definitions/main.CreateCommentRequest'
+          $ref: '#/definitions/app.CreateCommentRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/main.CommentsResponse'
+            $ref: '#/definitions/app.CommentsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/infrastructure.ErrorResponse'
       summary: Create comment
       tags:
       - comments

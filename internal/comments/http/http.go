@@ -1,7 +1,7 @@
 package http
 
 import (
-	"interlocutr/comments/app"
+	"interlocutr/internal/comments/app"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -16,8 +16,8 @@ func NewCommentsHandlers(e *echo.Echo, app *app.App) CommentsHandlers {
 		app: app,
 	}
 
-	e.GET("/:site/:resource/comments", h.GetComments)
-	e.POST("/:site/:resource/comments", h.CreateComment)
+	e.GET("/api/:site/:resource/comments", h.GetComments)
+	e.POST("/api/:site/:resource/comments", h.CreateComment)
 
 	return h
 }
@@ -29,9 +29,9 @@ func NewCommentsHandlers(e *echo.Echo, app *app.App) CommentsHandlers {
 // @Produce      json
 // @Param        site      path  string  true  "Site identifier"
 // @Param        resource  path  string  true  "Resource identifier"
-// @Success      200       {object}  []CommentsResponse
-// Failure      400       {object}  echo.HTTPError
-// @Router       /{site}/{resource}/comments [get]
+// @Success      200       {object}  []app.CommentsResponse
+// @Failure      400       {object}  infrastructure.ErrorResponse
+// @Router       /api/{site}/{resource}/comments [get]
 func (h *CommentsHandlers) GetComments(c echo.Context) error {
 	return c.JSON(http.StatusOK, h.app.GetComments())
 }
@@ -44,10 +44,10 @@ func (h *CommentsHandlers) GetComments(c echo.Context) error {
 // @Produce      json
 // @Param        site      path  string               true  "Site identifier"
 // @Param        resource  path  string               true  "Resource identifier"
-// @Param        comment   body  CreateCommentRequest true  "Comment to create"
-// @Success      201       {object}  CommentsResponse
-// Failure      400       {object}  echo.HTTPError
-// @Router       /{site}/{resource}/comments [post]
+// @Param        comment   body  app.CreateCommentRequest true  "Comment to create"
+// @Success      201       {object}  app.CommentsResponse
+// @Failure      400       {object}  infrastructure.ErrorResponse
+// @Router       /api/{site}/{resource}/comments [post]
 func (h *CommentsHandlers) CreateComment(c echo.Context) error {
 	comment := new(app.CreateCommentRequest)
 
