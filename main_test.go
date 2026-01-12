@@ -1,13 +1,14 @@
 package main_test
 
 import (
-	main "interlocutr"
-	"interlocutr/internal/comments/app"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 	"time"
+
+	main "github.com/renq/interlocutr"
+	"github.com/renq/interlocutr/internal/comments/app"
 
 	"github.com/stretchr/testify/assert"
 )

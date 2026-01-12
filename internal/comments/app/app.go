@@ -1,8 +1,9 @@
 package app
 
 import (
-	"interlocutr/internal/infrastructure"
 	"time"
+
+	"github.com/renq/interlocutr/internal/infrastructure"
 )
 
 type App struct {

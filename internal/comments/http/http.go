@@ -1,8 +1,9 @@
 package http
 
 import (
-	"interlocutr/internal/comments/app"
 	"net/http"
+
+	"github.com/renq/interlocutr/internal/comments/app"
 
 	"github.com/labstack/echo/v4"
 )

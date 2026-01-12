@@ -1,4 +1,4 @@
-module interlocutr
+module github.com/renq/interlocutr
 
 go 1.25
 

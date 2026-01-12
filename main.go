@@ -1,9 +1,9 @@
 package main
 
 import (
-	_ "interlocutr/docs"
-	"interlocutr/internal/comments/app"
-	"interlocutr/internal/comments/http"
+	_ "github.com/renq/interlocutr/docs"
+	"github.com/renq/interlocutr/internal/comments/app"
+	"github.com/renq/interlocutr/internal/comments/http"
 
 	"github.com/labstack/echo/v4"
 	echoSwagger "github.com/swaggo/echo-swagger"

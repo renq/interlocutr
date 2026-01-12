@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"interlocutr/internal/infrastructure"
+	"github.com/renq/interlocutr/internal/infrastructure"
 
 	"github.com/stretchr/testify/assert"
 )

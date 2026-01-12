@@ -1,9 +1,10 @@
 package app_test
 
 import (
-	"interlocutr/internal/comments/app"
 	"testing"
 	"time"
+
+	"github.com/renq/interlocutr/internal/comments/app"
 
 	"github.com/go-faker/faker/v4"
 	"github.com/stretchr/testify/assert"
