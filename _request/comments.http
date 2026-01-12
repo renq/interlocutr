@@ -1,6 +1,6 @@
 ###
 
-POST http://localhost:8080/test/page-1/comments
+POST http://localhost:8080/api/test/page-1/comments
 Content-Type: application/json
 
 {
@@ -10,5 +10,5 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:8080/test/page-1/comments
+GET http://localhost:8080/api/test/page-1/comments
 Content-Type: application/json

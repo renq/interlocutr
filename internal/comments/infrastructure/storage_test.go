@@ -1,18 +1,18 @@
-package app_test
+package infrastructure_test
 
 import (
 	"testing"
 	"time"
 
-	"github.com/renq/interlocutr/internal/comments/app"
-
 	"github.com/go-faker/faker/v4"
+	"github.com/renq/interlocutr/internal/comments/app"
+	"github.com/renq/interlocutr/internal/comments/infrastructure"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestCommentsCanBeStoredAndRead(t *testing.T) {
 	t.Parallel()
-	storage := app.NewInMemoryStorage()
+	storage := infrastructure.NewInMemoryStorage()
 
 	t.Run("in a single page and post", func(t *testing.T) {
 		comment1 := AComment("site1", "page1")
@@ -36,7 +36,7 @@ func TestCommentsCanBeStoredAndRead(t *testing.T) {
 }
 
 func TestBrokenStorage(t *testing.T) {
-	storage := app.InMemoryStorage{}
+	storage := infrastructure.InMemoryStorage{}
 	storage.Break()
 
 	t.Run("returns error on creating a new comment", func(t *testing.T) {

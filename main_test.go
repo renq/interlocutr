@@ -8,7 +8,7 @@ import (
 	"time"
 
 	main "github.com/renq/interlocutr"
-	"github.com/renq/interlocutr/internal/comments/app"
+	"github.com/renq/interlocutr/internal/comments/factory"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -18,7 +18,7 @@ func TestCreateAndGetComments(t *testing.T) {
 
 	// Arrange
 	now, _ := time.Parse(time.RFC3339, "2026-01-06T01:12:12Z")
-	app := app.NewApp()
+	app := factory.BuildApp()
 	app.FreezeTime(now)
 
 	e := main.NewServer(app)

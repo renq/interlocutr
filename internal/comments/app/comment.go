@@ -24,7 +24,7 @@ type CommentsResponse struct {
 }
 
 func (a *App) GetComments() []CommentsResponse {
-	comments, _ := a.storage.GetComments("", "")
+	comments, _ := a.Storage.GetComments("", "")
 	result := make([]CommentsResponse, len(comments))
 
 	for i, comment := range comments {
@@ -39,9 +39,9 @@ func (a *App) GetComments() []CommentsResponse {
 }
 
 func (a *App) CreateComment(command CreateCommentRequest) error {
-	return a.storage.CreateComment(Comment{
+	return a.Storage.CreateComment(Comment{
 		Author:    command.Author,
 		Text:      command.Text,
-		CreatedAt: a.clock.Now(),
+		CreatedAt: a.Clock.Now(),
 	})
 }

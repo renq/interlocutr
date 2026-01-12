@@ -3,6 +3,7 @@ package main
 import (
 	_ "github.com/renq/interlocutr/docs"
 	"github.com/renq/interlocutr/internal/comments/app"
+	"github.com/renq/interlocutr/internal/comments/factory"
 	"github.com/renq/interlocutr/internal/comments/http"
 
 	"github.com/labstack/echo/v4"
@@ -30,7 +31,7 @@ func NewServer(app *app.App) *echo.Echo {
 // @externalDocs.description  OpenAPI
 // @externalDocs.url          https://swagger.io/resources/open-api/
 func main() {
-	e := NewServer(app.NewApp())
+	e := NewServer(factory.BuildApp())
 
 	e.Logger.Fatal(e.Start(":8080"))
 }

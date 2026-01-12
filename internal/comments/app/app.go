@@ -3,21 +3,21 @@ package app
 import (
 	"time"
 
-	"github.com/renq/interlocutr/internal/infrastructure"
+	"github.com/renq/interlocutr/internal/infrastructure/clock"
 )
 
 type App struct {
-	clock   *infrastructure.Clock
-	storage Storage
+	Clock   *clock.Clock
+	Storage Storage
 }
 
 func (a *App) FreezeTime(time time.Time) {
-	a.clock.FreezeTime(time)
+	a.Clock.FreezeTime(time)
 }
 
-func NewApp() *App {
+func NewApp(storage Storage) *App {
 	return &App{
-		clock:   infrastructure.NewClock(),
-		storage: NewInMemoryStorage(),
+		Clock:   clock.NewClock(),
+		Storage: storage,
 	}
 }
