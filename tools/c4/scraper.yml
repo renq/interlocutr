@@ -1,0 +1,45 @@
+configuration:
+  pkgs:
+    - "github.com"
+
+rules:
+  - name_regexp: ".*"
+    pkg_regexps:
+      - ".*/internal/comments/app.*"
+    component:
+      description: "application"
+      tags:
+        - APP
+
+  - name_regexp: ".*"
+    pkg_regexps:
+      - ".*/internal/comments/factory.*"
+    component:
+      description: "app factory"
+      tags:
+        - APP_FACTORY
+        
+  - name_regexp: ".*"
+    pkg_regexps:
+      - ".*/internal/comments/infrastructure.*"
+    component:
+      description: "comments infrastructure"
+      tags:
+        - COMMENTS_INFRA
+
+  - name_regexp: ".*"
+    pkg_regexps:
+      - ".*/internal/infrastructure.*"
+    component:
+      description: "infrastructure"
+      tags:
+        - INFRA
+
+
+  - name_regexp: ".*"
+    pkg_regexps:
+      - ".*"
+    component:
+      description: "other"
+      tags:
+        - OTHER

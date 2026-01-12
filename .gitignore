@@ -1,1 +1,3 @@
 /tmp
+/tools/c4/out/*
+!.gitkeep
