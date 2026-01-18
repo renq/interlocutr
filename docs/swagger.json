@@ -1,18 +1,47 @@
 {
     "swagger": "2.0",
     "info": {
-        "title": "Interlocutr API",
-        "contact": {
-            "email": "michal@lipek.net"
-        },
-        "license": {
-            "name": "MIT"
-        },
-        "version": "1.0"
+        "contact": {}
     },
-    "host": "localhost:8080",
-    "basePath": "/",
     "paths": {
+        "/api/admin/{site}": {
+            "post": {
+                "description": "Create site",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "comments"
+                ],
+                "summary": "Create site",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Site identifier",
+                        "name": "site",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/infrastructure.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/infrastructure.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/{site}/{resource}/comments": {
             "get": {
                 "description": "get comments for site and resource",
@@ -151,9 +180,5 @@
                 }
             }
         }
-    },
-    "externalDocs": {
-        "description": "OpenAPI",
-        "url": "https://swagger.io/resources/open-api/"
     }
 }

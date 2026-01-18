@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	main "github.com/renq/interlocutr"
+	"github.com/renq/interlocutr/cmd"
 	"github.com/renq/interlocutr/internal/comments/factory"
 
 	"github.com/stretchr/testify/assert"
@@ -21,7 +21,7 @@ func TestCreateAndGetComments(t *testing.T) {
 	app := factory.BuildApp()
 	app.FreezeTime(now)
 
-	e := main.NewServer(app)
+	e := cmd.NewServer(app)
 
 	createJson := `{
 		"author": "Michał",
@@ -55,9 +55,22 @@ func TestCreateAndGetComments(t *testing.T) {
 	assert.JSONEq(t, expectedJson, rec.Body.String())
 }
 
-// func getResponse[T any](t *testing.T, recorder *httptest.ResponseRecorder) T {
-// 	var s *T
-// 	assert.NoError(t, json.Unmarshal(recorder.Body.Bytes(), &s))
+func TestGetSites(t *testing.T) {
+	t.Parallel()
+	t.Skip("Not implemented yet")
 
-// 	return *s
-// }
+	t.Run("site can't be created if token is not present in the request", func(t *testing.T) {
+		app := factory.BuildApp()
+		e := cmd.NewServer(app)
+
+		req := httptest.NewRequest(http.MethodPost, "/api/admin/test-site", nil)
+		req.Header.Set("Content-Type", "application/json")
+		rec := httptest.NewRecorder()
+
+		// Act
+		e.ServeHTTP(rec, req)
+
+		// Assert
+		assert.Equal(t, http.StatusUnauthorized, rec.Code)
+	})
+}

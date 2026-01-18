@@ -1,4 +1,3 @@
-basePath: /
 definitions:
   app.CommentsResponse:
     properties:
@@ -25,17 +24,8 @@ definitions:
       message:
         type: string
     type: object
-externalDocs:
-  description: OpenAPI
-  url: https://swagger.io/resources/open-api/
-host: localhost:8080
 info:
-  contact:
-    email: michal@lipek.net
-  license:
-    name: MIT
-  title: Interlocutr API
-  version: "1.0"
+  contact: {}
 paths:
   /api/{site}/{resource}/comments:
     get:
@@ -100,6 +90,31 @@ paths:
           schema:
             $ref: '#/definitions/infrastructure.ErrorResponse'
       summary: Create comment
+      tags:
+      - comments
+  /api/admin/{site}:
+    post:
+      consumes:
+      - application/json
+      description: Create site
+      parameters:
+      - description: Site identifier
+        in: path
+        name: site
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/infrastructure.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/infrastructure.ErrorResponse'
+      summary: Create site
       tags:
       - comments
 swagger: "2.0"
