@@ -1,12 +1,12 @@
 # The backlog
 
-1. Check the token in the sites API.
-1. Improve auth mechamism and create something more sophisticated than hardcoded login and password.
-1. POST /api/admin/sites returns 401 Unautorized if user token is not present in the request.
+1. Improve auth mechamism and create something more sophisticated than hardcoded login and password. dd possibility to define users. User should have an ID because I'll need this later.
+1. Create add/get sites API for a user.
+1. Figure out how to calculate coverage. The current way I wrote tests shows almost 0 where it should be almost 100% (as I use TDD).
 
 
 Plan:
-- POST /api/admin/sites + pyload. Should require valid authentication.
+- POST /api/admin/sites + pyload. Should should create a new site.
 - GET /api/admin/sites. Should require valid authentication. User should see only their websites.
 
 
