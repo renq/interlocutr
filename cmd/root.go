@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/labstack/echo/v5"
-	_ "github.com/renq/interlocutr/docs"
 	adminAuth "github.com/renq/interlocutr/internal/auth"
 	"github.com/renq/interlocutr/internal/comments/app"
 	"github.com/renq/interlocutr/internal/comments/factory"
@@ -23,8 +22,6 @@ It will start the server on port 8080.
 You can then access the API documentation under /swagger/index.html
 	
 Run the app with --help to see all available options.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
 		StartServer()
 	},

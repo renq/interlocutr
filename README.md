@@ -21,7 +21,7 @@ air
 ### Generate swagger
 
 ```
-swag init
+swag init --outputTypes=json,yaml .
 ```
 
 ## Quality tools

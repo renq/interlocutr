@@ -11,7 +11,7 @@ pre-commit:
       run: golangci-lint run
     swag:
       glob: "*/http/*.go"
-      run: swag init .
+      run: swag init --outputTypes=json,yaml .
     test:
       glob: "*.go"
       run: go test ./...
