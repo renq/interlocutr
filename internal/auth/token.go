@@ -1,4 +1,4 @@
-package adminAuth
+package token
 
 import (
 	"net/http"
@@ -8,8 +8,8 @@ import (
 	"github.com/labstack/echo/v5"
 )
 
-func NewAuthHandler(e *echo.Echo) {
-	e.POST("/oauth/token", authHandler)
+func NewTokenHandler(e *echo.Echo) {
+	e.POST("/oauth/token", tokenHandler)
 }
 
 type loginRequest struct {
@@ -40,7 +40,7 @@ type JwtResponse struct {
 // @Success      200       {object}  JwtResponse
 // @Failure      400       {object}  infrastructure.ErrorResponse
 // @Router       /oauth/token [post]
-func authHandler(c *echo.Context) error {
+func tokenHandler(c *echo.Context) error {
 	formData := loginRequest{}
 	bindError := c.Bind(&formData)
 	if bindError != nil {

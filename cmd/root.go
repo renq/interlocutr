@@ -4,8 +4,10 @@ import (
 	"log/slog"
 	"os"
 
+	"github.com/golang-jwt/jwt/v5"
+	echojwt "github.com/labstack/echo-jwt/v5"
 	"github.com/labstack/echo/v5"
-	adminAuth "github.com/renq/interlocutr/internal/auth"
+	token "github.com/renq/interlocutr/internal/auth"
 	"github.com/renq/interlocutr/internal/comments/app"
 	"github.com/renq/interlocutr/internal/comments/factory"
 	commentsHttp "github.com/renq/interlocutr/internal/comments/http"
@@ -19,7 +21,6 @@ var rootCmd = &cobra.Command{
 	Short: "Interlocurt is a simple comments service",
 	Long: `To run interlocutr just run it without any parameters.
 It will start the server on port 8080.
-You can then access the API documentation under /swagger/index.html
 	
 Run the app with --help to see all available options.`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -44,9 +45,22 @@ func NewServer(app *app.App) *echo.Echo {
 	// Disabled because it does not work with echo v5 yet
 	// e.GET("/swagger/*", echo.WrapHandler(echoSwagger.WrapHandler))
 
+	// comments
 	commentsHttp.NewCommentsHandlers(e, app)
-	adminAuth.NewAuthHandler(e)
-	commentsHttp.NewSitesHandlers(e, app)
+
+	// admin
+	token.NewTokenHandler(e)
+
+	admin := e.Group("/api/admin")
+	config := echojwt.Config{
+		NewClaimsFunc: func(c *echo.Context) jwt.Claims {
+			return new(token.JwtCustomClaims)
+		},
+		SigningKey: []byte("secret"),
+	}
+	admin.Use(echojwt.WithConfig(config))
+
+	commentsHttp.NewSitesHandlers(admin, app)
 
 	return e
 }
