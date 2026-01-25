@@ -1,16 +1,4 @@
 definitions:
-  adminAuth.JwtResponse:
-    properties:
-      token:
-        type: string
-    type: object
-  adminAuth.loginRequest:
-    properties:
-      password:
-        type: string
-      username:
-        type: string
-    type: object
   app.CommentsResponse:
     properties:
       author:
@@ -34,6 +22,18 @@ definitions:
   infrastructure.ErrorResponse:
     properties:
       message:
+        type: string
+    type: object
+  token.JwtResponse:
+    properties:
+      token:
+        type: string
+    type: object
+  token.loginRequest:
+    properties:
+      password:
+        type: string
+      username:
         type: string
     type: object
 info:
@@ -148,14 +148,14 @@ paths:
         in: body
         name: request
         schema:
-          $ref: '#/definitions/adminAuth.loginRequest'
+          $ref: '#/definitions/token.loginRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/adminAuth.JwtResponse'
+            $ref: '#/definitions/token.JwtResponse'
         "400":
           description: Bad Request
           schema:
