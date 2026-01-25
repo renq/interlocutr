@@ -9,6 +9,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/labstack/echo/v5"
 	"github.com/renq/interlocutr/cmd"
 	"github.com/renq/interlocutr/internal/comments/factory"
 
@@ -116,9 +117,9 @@ func TestJwtAuth(t *testing.T) {
 
 func TestGetSites(t *testing.T) {
 	t.Parallel()
-	t.Skip("Not implemented yet")
+	// t.Skip("disabled")
 
-	t.Run("site can't be created if token is not present in the request", func(t *testing.T) {
+	t.Run("site can't be created if request is not authorized", func(t *testing.T) {
 		app := factory.BuildApp()
 		e := cmd.NewServer(app)
 
@@ -132,6 +133,32 @@ func TestGetSites(t *testing.T) {
 		// Assert
 		assert.Equal(t, http.StatusUnauthorized, rec.Code)
 	})
+
+	t.Run("authorized user can add a site", func(t *testing.T) {
+		app := factory.BuildApp()
+		e := cmd.NewServer(app)
+
+		// //
+		// req := httptest.NewRequest(http.MethodPost, "/oauth/token", strings.NewReader(`{"username":"admin","password":"secret"}`))
+		// req.Header.Set("Content-Type", "application/json")
+		// rec := httptest.NewRecorder()
+		// e.ServeHTTP(rec, req)
+		// token := bufferToJson(t, rec.Body)["token"].(string)
+		// assert.Equal(t, http.StatusOK, rec.Code)
+		// fmt.Println("Obtained token:", token)
+		// //
+
+		req := httptest.NewRequest(http.MethodPost, "/api/admin/test-site", nil)
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Authorization", "Bearer "+getJWTToken(t, e))
+		rec := httptest.NewRecorder()
+
+		// Act
+		e.ServeHTTP(rec, req)
+
+		// Assert
+		assert.Equal(t, http.StatusCreated, rec.Code)
+	})
 }
 
 func bufferToJson(t *testing.T, body *bytes.Buffer) map[string]any {
@@ -141,4 +168,15 @@ func bufferToJson(t *testing.T, body *bytes.Buffer) map[string]any {
 	}
 
 	return responseBody
+}
+
+func getJWTToken(t *testing.T, e *echo.Echo) string {
+	req := httptest.NewRequest(http.MethodPost, "/oauth/token", strings.NewReader(`{"username":"admin","password":"secret"}`))
+	req.Header.Set("Content-Type", "application/json")
+	rec := httptest.NewRecorder()
+	e.ServeHTTP(rec, req)
+	token := bufferToJson(t, rec.Body)["token"].(string)
+	assert.Equal(t, http.StatusOK, rec.Code)
+
+	return token
 }

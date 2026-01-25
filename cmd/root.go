@@ -1,16 +1,16 @@
 package cmd
 
 import (
+	"log/slog"
 	"os"
 
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 	_ "github.com/renq/interlocutr/docs"
-	authHttp "github.com/renq/interlocutr/internal/auth"
+	adminAuth "github.com/renq/interlocutr/internal/auth"
 	"github.com/renq/interlocutr/internal/comments/app"
 	"github.com/renq/interlocutr/internal/comments/factory"
 	commentsHttp "github.com/renq/interlocutr/internal/comments/http"
 	"github.com/spf13/cobra"
-	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
 var port string
@@ -44,10 +44,12 @@ func init() {
 func NewServer(app *app.App) *echo.Echo {
 	e := echo.New()
 
-	e.GET("/swagger/*", echoSwagger.WrapHandler)
+	// Disabled because it does not work with echo v5 yet
+	// e.GET("/swagger/*", echo.WrapHandler(echoSwagger.WrapHandler))
 
 	commentsHttp.NewCommentsHandlers(e, app)
-	authHttp.NewAuthHandler(e)
+	adminAuth.NewAuthHandler(e)
+	commentsHttp.NewSitesHandlers(e, app)
 
 	return e
 }
@@ -65,5 +67,8 @@ func NewServer(app *app.App) *echo.Echo {
 func StartServer() {
 	e := NewServer(factory.BuildApp())
 
-	e.Logger.Fatal(e.Start(":" + port))
+	err := e.Start(":" + port)
+	if err != nil {
+		slog.Error("Error starting server", "error", err)
+	}
 }

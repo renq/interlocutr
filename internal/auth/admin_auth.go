@@ -1,11 +1,11 @@
-package http
+package adminAuth
 
 import (
 	"net/http"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 )
 
 func NewAuthHandler(e *echo.Echo) {
@@ -17,7 +17,7 @@ type loginRequest struct {
 	Password string `form:"password" json:"password"`
 }
 
-type jwtCustomClaims struct {
+type JwtCustomClaims struct {
 	Name  string `json:"name"`
 	Admin bool   `json:"admin"`
 	jwt.RegisteredClaims
@@ -40,7 +40,7 @@ type JwtResponse struct {
 // @Success      200       {object}  JwtResponse
 // @Failure      400       {object}  infrastructure.ErrorResponse
 // @Router       /oauth/token [post]
-func authHandler(c echo.Context) error {
+func authHandler(c *echo.Context) error {
 	formData := loginRequest{}
 	bindError := c.Bind(&formData)
 	if bindError != nil {
@@ -51,7 +51,7 @@ func authHandler(c echo.Context) error {
 		return echo.ErrUnauthorized
 	}
 
-	claims := &jwtCustomClaims{
+	claims := &JwtCustomClaims{
 		"Jon Snow",
 		true,
 		jwt.RegisteredClaims{

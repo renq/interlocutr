@@ -5,7 +5,7 @@ import (
 
 	"github.com/renq/interlocutr/internal/comments/app"
 
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 )
 
 type CommentsHandlers struct {
@@ -33,7 +33,7 @@ func NewCommentsHandlers(e *echo.Echo, app *app.App) CommentsHandlers {
 // @Success      200       {object}  []app.CommentsResponse
 // @Failure      400       {object}  infrastructure.ErrorResponse
 // @Router       /api/{site}/{resource}/comments [get]
-func (h *CommentsHandlers) GetComments(c echo.Context) error {
+func (h *CommentsHandlers) GetComments(c *echo.Context) error {
 	return c.JSON(http.StatusOK, h.app.GetComments())
 }
 
@@ -49,7 +49,7 @@ func (h *CommentsHandlers) GetComments(c echo.Context) error {
 // @Success      201       {object}  app.CommentsResponse
 // @Failure      400       {object}  infrastructure.ErrorResponse
 // @Router       /api/{site}/{resource}/comments [post]
-func (h *CommentsHandlers) CreateComment(c echo.Context) error {
+func (h *CommentsHandlers) CreateComment(c *echo.Context) error {
 	comment := new(app.CreateCommentRequest)
 
 	if err := c.Bind(comment); err != nil {
