@@ -1,6 +1,3 @@
-/*
-Copyright © 2026 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
@@ -8,9 +5,10 @@ import (
 
 	"github.com/labstack/echo/v4"
 	_ "github.com/renq/interlocutr/docs"
+	authHttp "github.com/renq/interlocutr/internal/auth"
 	"github.com/renq/interlocutr/internal/comments/app"
 	"github.com/renq/interlocutr/internal/comments/factory"
-	"github.com/renq/interlocutr/internal/comments/http"
+	commentsHttp "github.com/renq/interlocutr/internal/comments/http"
 	"github.com/spf13/cobra"
 	echoSwagger "github.com/swaggo/echo-swagger"
 )
@@ -48,7 +46,8 @@ func NewServer(app *app.App) *echo.Echo {
 
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
-	http.NewCommentsHandlers(e, app)
+	commentsHttp.NewCommentsHandlers(e, app)
+	authHttp.NewAuthHandler(e)
 
 	return e
 }

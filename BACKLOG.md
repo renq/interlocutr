@@ -1,8 +1,7 @@
 # The backlog
 
-1. Install cobra and create a simple command (help)
-1. Create command line command to generate a token
-1. Install JWT and check the token in the API
+1. Check the token in the sites API.
+1. Improve auth mechamism and create something more sophisticated than hardcoded login and password.
 1. POST /api/admin/sites returns 401 Unautorized if user token is not present in the request.
 
 
