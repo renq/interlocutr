@@ -1,7 +1,7 @@
 # The backlog
 
-1. Improve auth mechamism and create something more sophisticated than hardcoded login and password. dd possibility to define users. User should have an ID because I'll need this later.
 1. Create add/get sites API for a user.
+1. Improve auth mechamism and create something more sophisticated than hardcoded login and password. dd possibility to define users. User should have an ID because I'll need this later.
 1. Create two entrypoints for use cases: web and command line
 1. Rethink directory structure.
 
