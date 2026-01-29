@@ -11,20 +11,20 @@ type bucket struct {
 	Resource string
 }
 
-type storageStructure map[bucket][]app.Comment
+type commentsStorageStructure map[bucket][]app.Comment
 
-type InMemoryStorage struct {
-	storage storageStructure
+type InMemoryCommentsStorage struct {
+	storage commentsStorageStructure
 	broken  bool
 }
 
-func NewInMemoryStorage() app.Storage {
-	return &InMemoryStorage{
-		storage: make(storageStructure),
+func NewInMemoryCommentsStorage() app.CommentsStorage {
+	return &InMemoryCommentsStorage{
+		storage: make(commentsStorageStructure),
 	}
 }
 
-func (s *InMemoryStorage) CreateComment(comment app.Comment) error {
+func (s *InMemoryCommentsStorage) CreateComment(comment app.Comment) error {
 	if s.broken {
 		return errors.New("storage is broken: can't store a new comment")
 	}
@@ -36,7 +36,7 @@ func (s *InMemoryStorage) CreateComment(comment app.Comment) error {
 	return nil
 }
 
-func (s *InMemoryStorage) GetComments(site, resource string) ([]app.Comment, error) {
+func (s *InMemoryCommentsStorage) GetComments(site, resource string) ([]app.Comment, error) {
 	if s.broken {
 		return []app.Comment{}, errors.New("storage is broken: can't read comments")
 	}
@@ -46,6 +46,6 @@ func (s *InMemoryStorage) GetComments(site, resource string) ([]app.Comment, err
 	return s.storage[b], nil
 }
 
-func (s *InMemoryStorage) Break() {
+func (s *InMemoryCommentsStorage) Break() {
 	s.broken = true
 }

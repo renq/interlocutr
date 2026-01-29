@@ -1,6 +1,6 @@
 package app
 
-type Storage interface {
+type CommentsStorage interface {
 	CreateComment(comment Comment) error
 	GetComments(site, resource string) ([]Comment, error)
 }

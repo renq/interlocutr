@@ -12,7 +12,7 @@ import (
 
 func TestCommentsCanBeStoredAndRead(t *testing.T) {
 	t.Parallel()
-	storage := infrastructure.NewInMemoryStorage()
+	storage := infrastructure.NewInMemoryCommentsStorage()
 
 	t.Run("in a single page and post", func(t *testing.T) {
 		comment1 := AComment("site1", "page1")
@@ -36,7 +36,7 @@ func TestCommentsCanBeStoredAndRead(t *testing.T) {
 }
 
 func TestBrokenStorage(t *testing.T) {
-	storage := infrastructure.InMemoryStorage{}
+	storage := infrastructure.InMemoryCommentsStorage{}
 	storage.Break()
 
 	t.Run("returns error on creating a new comment", func(t *testing.T) {
