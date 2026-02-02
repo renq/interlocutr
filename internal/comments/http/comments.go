@@ -28,8 +28,8 @@ func NewCommentsHandlers(e *echo.Echo, app *app.App) CommentsHandlers {
 // @Description  get comments for site and resource
 // @Tags         comments
 // @Produce      json
-// @Param        site      path  string  true  "Site identifier"
-// @Param        resource  path  string  true  "Resource identifier"
+// @Param        site      path      string  true  "Site identifier"
+// @Param        resource  path      string  true  "Resource identifier"
 // @Success      200       {object}  []app.CommentsResponse
 // @Failure      400       {object}  infrastructure.ErrorResponse
 // @Router       /api/{site}/{resource}/comments [get]
@@ -43,10 +43,10 @@ func (h *CommentsHandlers) GetComments(c *echo.Context) error {
 // @Tags         comments
 // @Accept       json
 // @Produce      json
-// @Param        site      path  string               true  "Site identifier"
-// @Param        resource  path  string               true  "Resource identifier"
-// @Param        comment   body  app.CreateCommentRequest true  "Comment to create"
-// @Success      201       {object}  app.CommentsResponse
+// @Param        site      path      string                  true  "Site identifier"
+// @Param        resource  path      string                  true  "Resource identifier"
+// @Param        comment   body      app.CreateCommentRequest  true  "Comment to create"
+// @Success      201       {object}  nil
 // @Failure      400       {object}  infrastructure.ErrorResponse
 // @Router       /api/{site}/{resource}/comments [post]
 func (h *CommentsHandlers) CreateComment(c *echo.Context) error {
@@ -56,10 +56,11 @@ func (h *CommentsHandlers) CreateComment(c *echo.Context) error {
 		return err
 	}
 
-	error := h.app.CreateComment(*comment)
-	if error != nil {
-		return error
+	err := h.app.CreateComment(*comment)
+	if err != nil {
+		return err
 	}
 
+	// TODO: return ID?
 	return c.JSON(http.StatusCreated, nil)
 }

@@ -4,7 +4,7 @@
         "contact": {}
     },
     "paths": {
-        "/api/admin/{site}": {
+        "/api/admin/site": {
             "post": {
                 "description": "Create site",
                 "consumes": [
@@ -14,19 +14,27 @@
                     "application/json"
                 ],
                 "tags": [
-                    "comments"
+                    "sites"
                 ],
                 "summary": "Create site",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Site identifier",
+                        "description": "Site",
                         "name": "site",
-                        "in": "path",
-                        "required": true
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/app.CreateSiteRequest"
+                        }
                     }
                 ],
                 "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/app.CreateSiteResponse"
+                        }
+                    },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
@@ -35,6 +43,56 @@
                     },
                     "401": {
                         "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/infrastructure.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/site/{id}": {
+            "get": {
+                "description": "Get site by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "sites"
+                ],
+                "summary": "Get site",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Site ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/app.GetSiteResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/infrastructure.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/infrastructure.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/infrastructure.ErrorResponse"
                         }
@@ -125,10 +183,7 @@
                 ],
                 "responses": {
                     "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/app.CommentsResponse"
-                        }
+                        "description": "Created"
                     },
                     "400": {
                         "description": "Bad Request",
@@ -220,6 +275,42 @@
                     "type": "string"
                 },
                 "text": {
+                    "type": "string"
+                }
+            }
+        },
+        "app.CreateSiteRequest": {
+            "type": "object",
+            "properties": {
+                "domains": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "app.CreateSiteResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "app.GetSiteResponse": {
+            "type": "object",
+            "properties": {
+                "domains": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "id": {
                     "type": "string"
                 }
             }

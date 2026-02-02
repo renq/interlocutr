@@ -6,5 +6,8 @@ import (
 )
 
 func BuildApp() *app.App {
-	return app.NewApp(infrastructure.NewInMemoryCommentsStorage())
+	return app.NewApp(
+		infrastructure.NewInMemoryCommentsStorage(),
+		infrastructure.NewInMemorySitesStorage(),
+	)
 }

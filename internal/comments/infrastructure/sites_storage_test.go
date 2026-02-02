@@ -25,7 +25,7 @@ func TestNewInMemorySitesStorage(t *testing.T) {
 			Domains: []string{"example.com", "example.org"},
 		}
 
-		err := storage.CreateSite(site)
+		_, err := storage.CreateSite(site)
 		assert.NoError(t, err)
 
 		// Act
@@ -43,7 +43,8 @@ func TestInMemorySitesStorage_ConcurrentCreateAndGet(t *testing.T) {
 
 	t.Run("concurrent create", func(t *testing.T) {
 		runConcurrently(t, ids, func(id string) error {
-			return s.CreateSite(app.Site{ID: id})
+			_, err := s.CreateSite(app.Site{ID: id})
+			return err
 		})
 	})
 

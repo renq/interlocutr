@@ -117,13 +117,12 @@ func TestJwtAuth(t *testing.T) {
 
 func TestGetSites(t *testing.T) {
 	t.Parallel()
-	// t.Skip("disabled")
 
 	t.Run("site can't be created if request is not authorized", func(t *testing.T) {
 		app := factory.BuildApp()
 		e := cmd.NewServer(app)
 
-		req := httptest.NewRequest(http.MethodPost, "/api/admin/test-site", nil)
+		req := httptest.NewRequest(http.MethodPost, "/api/admin/site", nil)
 		req.Header.Set("Content-Type", "application/json")
 		rec := httptest.NewRecorder()
 
@@ -134,23 +133,19 @@ func TestGetSites(t *testing.T) {
 		assert.Equal(t, http.StatusUnauthorized, rec.Code)
 	})
 
-	t.Run("authorized user can add a site", func(t *testing.T) {
+	t.Run("authorized user can add a get site info", func(t *testing.T) {
 		app := factory.BuildApp()
 		e := cmd.NewServer(app)
 
-		// //
-		// req := httptest.NewRequest(http.MethodPost, "/oauth/token", strings.NewReader(`{"username":"admin","password":"secret"}`))
-		// req.Header.Set("Content-Type", "application/json")
-		// rec := httptest.NewRecorder()
-		// e.ServeHTTP(rec, req)
-		// token := bufferToJson(t, rec.Body)["token"].(string)
-		// assert.Equal(t, http.StatusOK, rec.Code)
-		// fmt.Println("Obtained token:", token)
-		// //
+		// Step 1 - add site
+		token := getJWTToken(t, e)
 
-		req := httptest.NewRequest(http.MethodPost, "/api/admin/test-site", nil)
+		req := httptest.NewRequest(http.MethodPost, "/api/admin/site", strings.NewReader(`{
+			"ID": "test-site",
+			"domains": ["interlocutr.lipek.net"]}
+		`))
 		req.Header.Set("Content-Type", "application/json")
-		req.Header.Set("Authorization", "Bearer "+getJWTToken(t, e))
+		req.Header.Set("Authorization", "Bearer "+token)
 		rec := httptest.NewRecorder()
 
 		// Act
@@ -158,16 +153,48 @@ func TestGetSites(t *testing.T) {
 
 		// Assert
 		assert.Equal(t, http.StatusCreated, rec.Code)
+
+		var response struct {
+			ID string `json:"id"`
+		}
+		bufferToStruct(t, rec.Body, &response)
+		assert.Equal(t, response.ID, "test-site")
+
+		// Step 2 - get site info
+
+		req = httptest.NewRequest(http.MethodGet, "/api/admin/site/test-site", nil)
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Authorization", "Bearer "+token)
+		rec = httptest.NewRecorder()
+
+		// Act
+		e.ServeHTTP(rec, req)
+
+		// Assert
+		assert.Equal(t, http.StatusOK, rec.Code)
+		var getResponse struct {
+			ID      string   `json:"id"`
+			Domains []string `json:"domains"`
+		}
+		bufferToStruct(t, rec.Body, &getResponse)
+		assert.Equal(t, "test-site", getResponse.ID)
+		assert.Equal(t, []string{"interlocutr.lipek.net"}, getResponse.Domains)
 	})
 }
 
 func bufferToJson(t *testing.T, body *bytes.Buffer) map[string]any {
 	var responseBody map[string]any
 	if e := json.Unmarshal(body.Bytes(), &responseBody); e != nil {
-		assert.NoError(t, e)
+		assert.NoError(t, e, "response is not valid json: %s", body.String())
 	}
 
 	return responseBody
+}
+
+func bufferToStruct(t *testing.T, body *bytes.Buffer, out interface{}) {
+	if e := json.Unmarshal(body.Bytes(), out); e != nil {
+		assert.NoError(t, e)
+	}
 }
 
 func getJWTToken(t *testing.T, e *echo.Echo) string {

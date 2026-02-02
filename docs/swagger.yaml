@@ -19,6 +19,29 @@ definitions:
       text:
         type: string
     type: object
+  app.CreateSiteRequest:
+    properties:
+      domains:
+        items:
+          type: string
+        type: array
+      id:
+        type: string
+    type: object
+  app.CreateSiteResponse:
+    properties:
+      id:
+        type: string
+    type: object
+  app.GetSiteResponse:
+    properties:
+      domains:
+        items:
+          type: string
+        type: array
+      id:
+        type: string
+    type: object
   infrastructure.ErrorResponse:
     properties:
       message:
@@ -95,8 +118,6 @@ paths:
       responses:
         "201":
           description: Created
-          schema:
-            $ref: '#/definitions/app.CommentsResponse'
         "400":
           description: Bad Request
           schema:
@@ -104,20 +125,25 @@ paths:
       summary: Create comment
       tags:
       - comments
-  /api/admin/{site}:
+  /api/admin/site:
     post:
       consumes:
       - application/json
       description: Create site
       parameters:
-      - description: Site identifier
-        in: path
+      - description: Site
+        in: body
         name: site
         required: true
-        type: string
+        schema:
+          $ref: '#/definitions/app.CreateSiteRequest'
       produces:
       - application/json
       responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/app.CreateSiteResponse'
         "400":
           description: Bad Request
           schema:
@@ -128,7 +154,40 @@ paths:
             $ref: '#/definitions/infrastructure.ErrorResponse'
       summary: Create site
       tags:
-      - comments
+      - sites
+  /api/admin/site/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get site by id
+      parameters:
+      - description: Site ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/app.GetSiteResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/infrastructure.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/infrastructure.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/infrastructure.ErrorResponse'
+      summary: Get site
+      tags:
+      - sites
   /oauth/token:
     post:
       consumes:

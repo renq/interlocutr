@@ -19,17 +19,17 @@ func NewInMemorySitesStorage() app.SitesStorage {
 	}
 }
 
-func (s *InMemorySitesStorege) CreateSite(site app.Site) error {
+func (s *InMemorySitesStorege) CreateSite(site app.Site) (app.Site, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	if _, ok := s.storage[site.ID]; ok {
-		return app.ErrorAlreadyExists
+		return app.Site{}, app.ErrorAlreadyExists
 	}
 
 	s.storage[site.ID] = site
 
-	return nil
+	return site, nil
 }
 
 func (s *InMemorySitesStorege) GetSite(ID string) (app.Site, error) {
