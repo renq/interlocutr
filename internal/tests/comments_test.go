@@ -18,12 +18,11 @@ func TestCreateAndGetComments(t *testing.T) {
 
 	// Arrange
 	now, _ := time.Parse(time.RFC3339, "2026-01-06T01:12:12Z")
-	application := factory.BuildApp()
-	application.FreezeTime(now)
 
-	e := cmd.NewServer(application)
+	driver := NewTestDriver(t)
+	e := driver.E
+	driver.FreezeTime(now)
 
-	driver := NewTestDriver(application, t, e)
 	driver.LoginAsAdmin()
 
 	// Arrange - add site

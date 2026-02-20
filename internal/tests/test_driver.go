@@ -6,9 +6,12 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/labstack/echo/v5"
+	"github.com/renq/interlocutr/cmd"
 	"github.com/renq/interlocutr/internal/comments/app"
+	"github.com/renq/interlocutr/internal/comments/factory"
 )
 
 type ApiResponse[T any] struct {
@@ -18,22 +21,27 @@ type ApiResponse[T any] struct {
 }
 
 type TestDriver struct {
-	app      *app.App
+	App      *app.App // TODO make it privat
 	t        *testing.T
-	e        *echo.Echo
+	E        *echo.Echo // TODO make it privat
 	jwtToken string
 }
 
-func NewTestDriver(app *app.App, t *testing.T, e *echo.Echo) TestDriver {
+func NewTestDriver(t *testing.T) TestDriver {
+	app := factory.BuildApp()
 	return TestDriver{
-		app: app,
+		App: app,
 		t:   t,
-		e:   e,
+		E:   cmd.NewServer(app),
 	}
 }
 
 func (d *TestDriver) LoginAsAdmin() {
-	d.jwtToken = getJWTToken(d.t, d.e)
+	d.jwtToken = getJWTToken(d.t, d.E)
+}
+
+func (d *TestDriver) FreezeTime(time time.Time) {
+	d.App.FreezeTime(time)
 }
 
 func (d *TestDriver) CreateSite(request app.CreateSiteRequest) ApiResponse[app.CreateSiteResponse] {
@@ -42,7 +50,7 @@ func (d *TestDriver) CreateSite(request app.CreateSiteRequest) ApiResponse[app.C
 	req.Header.Set("Authorization", "Bearer "+d.jwtToken)
 	rec := httptest.NewRecorder()
 
-	d.e.ServeHTTP(rec, req)
+	d.E.ServeHTTP(rec, req)
 
 	var response app.CreateSiteResponse
 	if rec.Code < 300 {
@@ -61,7 +69,7 @@ func (d *TestDriver) GetSite(siteID string) ApiResponse[app.GetSiteResponse] {
 	req.Header.Set("Authorization", "Bearer "+d.jwtToken)
 	rec := httptest.NewRecorder()
 
-	d.e.ServeHTTP(rec, req)
+	d.E.ServeHTTP(rec, req)
 
 	var response app.GetSiteResponse
 	if rec.Code < 300 {
