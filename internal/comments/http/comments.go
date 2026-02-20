@@ -43,8 +43,8 @@ func (h *CommentsHandlers) GetComments(c *echo.Context) error {
 // @Tags         comments
 // @Accept       json
 // @Produce      json
-// @Param        site      path      string                  true  "Site identifier"
-// @Param        resource  path      string                  true  "Resource identifier"
+// @Param        site      path      string                    true  "Site identifier"
+// @Param        resource  path      string                    true  "Resource identifier"
 // @Param        comment   body      app.CreateCommentRequest  true  "Comment to create"
 // @Success      201       {object}  nil
 // @Failure      400       {object}  infrastructure.ErrorResponse

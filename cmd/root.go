@@ -1,7 +1,9 @@
 package cmd
 
 import (
+	"errors"
 	"log/slog"
+	"net/http"
 	"os"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -39,14 +41,46 @@ func init() {
 	rootCmd.Flags().StringVar(&port, "port", "8080", "Port number for the server")
 }
 
-func NewServer(app *app.App) *echo.Echo {
+func NewServer(application *app.App) *echo.Echo {
 	e := echo.New()
+
+	e.HTTPErrorHandler = func(c *echo.Context, err error) {
+		if resp, uErr := echo.UnwrapResponse(c.Response()); uErr == nil {
+			if resp.Committed {
+				return
+			}
+		}
+
+		code := http.StatusInternalServerError
+		message := "internal server error"
+
+		switch {
+		case errors.Is(err, app.ErrorNotFound):
+			code = http.StatusNotFound
+			message = err.Error()
+
+		case errors.Is(err, app.ErrorAlreadyExists):
+			code = http.StatusConflict
+			message = err.Error()
+		}
+
+		var sc echo.HTTPStatusCoder
+		if errors.As(err, &sc) { // find error in an error chain that implements HTTPStatusCoder
+			if tmp := sc.StatusCode(); tmp != 0 {
+				code = tmp
+			}
+		}
+
+		_ = c.JSON(code, map[string]any{
+			"error": message,
+		})
+	}
 
 	// Disabled because it does not work with echo v5 yet
 	// e.GET("/swagger/*", echo.WrapHandler(echoSwagger.WrapHandler))
 
-	// comments
-	commentsHttp.NewCommentsHandlers(e, app)
+	// public
+	commentsHttp.NewCommentsHandlers(e, application)
 
 	// admin
 	token.NewTokenHandler(e)
@@ -60,7 +94,7 @@ func NewServer(app *app.App) *echo.Echo {
 	}
 	admin.Use(echojwt.WithConfig(config))
 
-	commentsHttp.NewSitesHandlers(admin, app)
+	commentsHttp.NewSitesHandlers(admin, application)
 
 	return e
 }

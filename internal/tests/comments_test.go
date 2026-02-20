@@ -1,4 +1,4 @@
-package internal_tests
+package tests
 
 import (
 	"net/http"
@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/renq/interlocutr/cmd"
+	"github.com/renq/interlocutr/internal/comments/app"
 	"github.com/renq/interlocutr/internal/comments/factory"
 	"github.com/stretchr/testify/assert"
 )
@@ -17,11 +18,22 @@ func TestCreateAndGetComments(t *testing.T) {
 
 	// Arrange
 	now, _ := time.Parse(time.RFC3339, "2026-01-06T01:12:12Z")
-	app := factory.BuildApp()
-	app.FreezeTime(now)
+	application := factory.BuildApp()
+	application.FreezeTime(now)
 
-	e := cmd.NewServer(app)
+	e := cmd.NewServer(application)
 
+	driver := NewTestDriver(application, t, e)
+	driver.LoginAsAdmin()
+
+	// Arrange - add site
+	response := driver.CreateSite(app.CreateSiteRequest{
+		ID:      "test-site",
+		Domains: []string{"interlocutr.lipek.net"},
+	})
+	assert.Equal(t, response.StatusCode, http.StatusCreated)
+
+	// Arange 1
 	createJson := `{
 		"author": "Michał",
 		"text": "Jakiś tekst"
@@ -30,13 +42,13 @@ func TestCreateAndGetComments(t *testing.T) {
 	req.Header.Set("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
 
-	// Act
+	// Act 1 - create comment
 	e.ServeHTTP(rec, req)
 
 	// Assert 1
 	assert.Equal(t, http.StatusCreated, rec.Code)
 
-	// Arrange 2
+	// Act 2
 	req = httptest.NewRequest(http.MethodGet, "/api/test-site/1/comments", nil)
 	rec = httptest.NewRecorder()
 
@@ -52,4 +64,25 @@ func TestCreateAndGetComments(t *testing.T) {
 	// Assert
 	assert.Equal(t, http.StatusOK, rec.Code)
 	assert.JSONEq(t, expectedJson, rec.Body.String())
+}
+
+func TestCommentCanBeAddedOnlyToValidSite(t *testing.T) {
+	t.Parallel()
+
+	app := factory.BuildApp()
+	e := cmd.NewServer(app)
+
+	createJson := `{
+		"author": "Michał",
+		"text": "Jakiś tekst"
+	}`
+	req := httptest.NewRequest(http.MethodPost, "/api/abcde/1/comments", strings.NewReader(createJson))
+	req.Header.Set("Content-Type", "application/json")
+	rec := httptest.NewRecorder()
+
+	// Act
+	e.ServeHTTP(rec, req)
+
+	// Assert 1
+	assert.Equal(t, http.StatusNotFound, rec.Code)
 }

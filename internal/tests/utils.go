@@ -1,4 +1,4 @@
-package internal_tests
+package tests
 
 import (
 	"bytes"

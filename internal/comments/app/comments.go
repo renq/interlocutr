@@ -1,6 +1,8 @@
 package app
 
-import "time"
+import (
+	"time"
+)
 
 type Comment struct {
 	Site      string
@@ -39,6 +41,11 @@ func (a *App) GetComments() []CommentsResponse {
 }
 
 func (a *App) CreateComment(command CreateCommentRequest) error {
+	_, err := a.SitesStorage.GetSite(command.Site)
+	if err != nil {
+		return err
+	}
+
 	return a.CommentsStorage.CreateComment(Comment{
 		Author:    command.Author,
 		Text:      command.Text,
