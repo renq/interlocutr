@@ -20,49 +20,56 @@ func TestCreateAndGetComments(t *testing.T) {
 	now, _ := time.Parse(time.RFC3339, "2026-01-06T01:12:12Z")
 
 	driver := NewTestDriver(t)
-	e := driver.E
 	driver.FreezeTime(now)
 
 	driver.LoginAsAdmin()
 
 	// Arrange - add site
-	response := driver.CreateSite(app.CreateSiteRequest{
+	createSiteResponse := driver.CreateSite(app.CreateSiteRequest{
 		ID:      "test-site",
 		Domains: []string{"interlocutr.lipek.net"},
 	})
-	assert.Equal(t, response.StatusCode, http.StatusCreated)
-
-	// Arange 1
-	createJson := `{
-		"author": "Michał",
-		"text": "Jakiś tekst"
-	}`
-	req := httptest.NewRequest(http.MethodPost, "/api/test-site/1/comments", strings.NewReader(createJson))
-	req.Header.Set("Content-Type", "application/json")
-	rec := httptest.NewRecorder()
+	assert.Equal(t, createSiteResponse.StatusCode, http.StatusCreated)
 
 	// Act 1 - create comment
-	e.ServeHTTP(rec, req)
+	createCommentResponse := driver.CreateComment(app.CreateCommentRequest{
+		Site:     "test-site",
+		Resource: "1",
+		Author:   "Michał",
+		Text:     "Jakiś tekst",
+	})
 
 	// Assert 1
-	assert.Equal(t, http.StatusCreated, rec.Code)
+	assert.Equal(t, http.StatusCreated, createCommentResponse.StatusCode)
 
 	// Act 2
-	req = httptest.NewRequest(http.MethodGet, "/api/test-site/1/comments", nil)
-	rec = httptest.NewRecorder()
+	getCommentsResponse := driver.GetComments("test-site", "1")
 
-	expectedJson := `[{
-		"author": "Michał",
-		"text": "Jakiś tekst",
-		"created_at": "2026-01-06T01:12:12Z"
-	}]`
+	// Assert 2
+	assert.Equal(t, http.StatusOK, getCommentsResponse.StatusCode)
 
-	// Act
-	e.ServeHTTP(rec, req)
+	assert.Equal(t, []app.GetCommentResponse{
+		{
+			Author:    "Michał",
+			Text:      "Jakiś tekst",
+			CreatedAt: now,
+		}}, getCommentsResponse.Response)
 
-	// Assert
-	assert.Equal(t, http.StatusOK, rec.Code)
-	assert.JSONEq(t, expectedJson, rec.Body.String())
+	// req := httptest.NewRequest(http.MethodGet, "/api/test-site/1/comments", nil)
+	// rec := httptest.NewRecorder()
+
+	// expectedJson := `[{
+	// 	"author": "Michał",
+	// 	"text": "Jakiś tekst",
+	// 	"created_at": "2026-01-06T01:12:12Z"
+	// }]`
+
+	// // Act
+	// e.ServeHTTP(rec, req)
+
+	// // Assert
+	// assert.Equal(t, http.StatusOK, rec.Code)
+	// assert.JSONEq(t, expectedJson, rec.Body.String())
 }
 
 func TestCommentCanBeAddedOnlyToValidSite(t *testing.T) {

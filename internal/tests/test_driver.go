@@ -3,6 +3,7 @@ package tests
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -44,6 +45,8 @@ func (d *TestDriver) FreezeTime(time time.Time) {
 	d.App.FreezeTime(time)
 }
 
+// sites
+
 func (d *TestDriver) CreateSite(request app.CreateSiteRequest) ApiResponse[app.CreateSiteResponse] {
 	req := httptest.NewRequest(http.MethodPost, "/api/admin/site", d.toBody(request))
 	req.Header.Set("Content-Type", "application/json")
@@ -82,6 +85,48 @@ func (d *TestDriver) GetSite(siteID string) ApiResponse[app.GetSiteResponse] {
 		RawResponse: bufferToJson(d.t, rec.Body),
 	}
 }
+
+// comments
+
+func (d *TestDriver) CreateComment(request app.CreateCommentRequest) ApiResponse[any] {
+	var payload struct {
+		Author string `json:"author"`
+		Text   string `json:"text"`
+	}
+	payload.Author = request.Author
+	payload.Text = request.Text
+
+	req := httptest.NewRequest(http.MethodPost, fmt.Sprintf("/api/%s/%s/comments", request.Site, request.Resource), d.toBody(payload))
+	req.Header.Set("Content-Type", "application/json")
+	rec := httptest.NewRecorder()
+
+	d.E.ServeHTTP(rec, req)
+
+	return ApiResponse[any]{
+		StatusCode: rec.Code,
+	}
+}
+
+func (d *TestDriver) GetComments(siteID string, resource string) ApiResponse[[]app.GetCommentResponse] {
+	req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/api/%s/%s/comments", siteID, resource), nil)
+	req.Header.Set("Content-Type", "application/json")
+	rec := httptest.NewRecorder()
+
+	d.E.ServeHTTP(rec, req)
+
+	var response []app.GetCommentResponse
+	if rec.Code < 300 {
+		bufferToStruct(d.t, rec.Body, &response)
+	}
+
+	return ApiResponse[[]app.GetCommentResponse]{
+		StatusCode: rec.Code,
+		Response:   response,
+		// RawResponse: bufferToJson(d.t, rec.Body),
+	}
+}
+
+//
 
 func (d *TestDriver) toBody(v any) *bytes.Reader {
 	body, err := json.Marshal(v)

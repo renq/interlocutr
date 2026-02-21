@@ -19,18 +19,18 @@ type CreateCommentRequest struct {
 	Text     string `json:"text"`
 }
 
-type CommentsResponse struct {
+type GetCommentResponse struct {
 	Author    string    `json:"author"`
 	Text      string    `json:"text"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
-func (a *App) GetComments() []CommentsResponse {
+func (a *App) GetComments() []GetCommentResponse {
 	comments, _ := a.CommentsStorage.GetComments("", "")
-	result := make([]CommentsResponse, len(comments))
+	result := make([]GetCommentResponse, len(comments))
 
 	for i, comment := range comments {
-		result[i] = CommentsResponse{
+		result[i] = GetCommentResponse{
 			Author:    comment.Author,
 			Text:      comment.Text,
 			CreatedAt: comment.CreatedAt,
