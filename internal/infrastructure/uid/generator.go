@@ -24,14 +24,13 @@ func (g *IDGenerator) Generate() (uuid.UUID, error) {
 	return uuid.NewV7()
 }
 
-func (g *IDGenerator) DefineValues(values ...string) error {
-	for _, v := range values {
-		parsed, err := uuid.Parse(v)
-		if err != nil {
-			return err
-		}
-		g.definedValues = append(g.definedValues, parsed)
+func (g *IDGenerator) GetNextValues(n int) []uuid.UUID {
+	result := make([]uuid.UUID, n)
+	for k := range n {
+		id, _ := uuid.NewV7()
+		g.definedValues = append(g.definedValues, id)
+		result[k] = id
 	}
 
-	return nil
+	return result
 }

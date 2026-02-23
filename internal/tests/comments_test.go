@@ -18,6 +18,7 @@ func TestCreateAndGetComments(t *testing.T) {
 
 	driver := NewTestDriver(t)
 	driver.FreezeTime(now)
+	IDs := driver.GetNextIDValues(1)
 
 	driver.LoginAsAdmin()
 
@@ -50,6 +51,7 @@ func TestCreateAndGetComments(t *testing.T) {
 	assert.Equal(t, http.StatusOK, getCommentsResponse.StatusCode)
 	assert.Equal(t, []app.GetCommentResponse{
 		{
+			ID:        IDs[0],
 			Author:    newComment.Author,
 			Text:      newComment.Text,
 			CreatedAt: now,

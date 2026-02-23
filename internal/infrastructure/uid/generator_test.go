@@ -18,15 +18,12 @@ func TestReturnsUUIDv7(t *testing.T) {
 	assert.Equal(t, uuid.Version(7), id.Version())
 }
 
-func TestUsesCustomValueIfDefined(t *testing.T) {
-	definedValues := []string{"019c8c7b-c223-7408-bb50-263bf57372d3", "019c8c7d-0ec3-72d2-b113-f95eb38dbdb8"}
-
+func TestCanPregenerateNextIDs(t *testing.T) {
 	generator := uid.NewIDGenerator()
-	err := generator.DefineValues(definedValues...)
-	assert.NoError(t, err)
+	uuids := generator.GetNextValues(2)
 
-	uuid1 := uuid.MustParse(definedValues[0])
-	uuid2 := uuid.MustParse(definedValues[1])
+	uuid1 := uuids[0]
+	uuid2 := uuids[1]
 
 	// generator returns predefined values in order
 	generated1, _ := generator.Generate()

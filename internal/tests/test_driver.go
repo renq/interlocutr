@@ -9,6 +9,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v5"
 	"github.com/renq/interlocutr/cmd"
 	"github.com/renq/interlocutr/internal/comments/app"
@@ -22,27 +23,31 @@ type ApiResponse[T any] struct {
 }
 
 type TestDriver struct {
-	App      *app.App // TODO make it privat
+	app      *app.App
 	t        *testing.T
-	E        *echo.Echo // TODO make it privat
+	e        *echo.Echo
 	jwtToken string
 }
 
 func NewTestDriver(t *testing.T) TestDriver {
 	app := factory.BuildApp()
 	return TestDriver{
-		App: app,
+		app: app,
 		t:   t,
-		E:   cmd.NewServer(app),
+		e:   cmd.NewServer(app),
 	}
 }
 
 func (d *TestDriver) LoginAsAdmin() {
-	d.jwtToken = getJWTToken(d.t, d.E)
+	d.jwtToken = getJWTToken(d.t, d.e)
 }
 
 func (d *TestDriver) FreezeTime(time time.Time) {
-	d.App.FreezeTime(time)
+	d.app.FreezeTime(time)
+}
+
+func (d *TestDriver) GetNextIDValues(n int) []uuid.UUID {
+	return d.app.GetNextIDValues(n)
 }
 
 // sites
@@ -53,7 +58,7 @@ func (d *TestDriver) CreateSite(request app.CreateSiteRequest) ApiResponse[app.C
 	req.Header.Set("Authorization", "Bearer "+d.jwtToken)
 	rec := httptest.NewRecorder()
 
-	d.E.ServeHTTP(rec, req)
+	d.e.ServeHTTP(rec, req)
 
 	var response app.CreateSiteResponse
 	if rec.Code < 300 {
@@ -72,7 +77,7 @@ func (d *TestDriver) GetSite(siteID string) ApiResponse[app.GetSiteResponse] {
 	req.Header.Set("Authorization", "Bearer "+d.jwtToken)
 	rec := httptest.NewRecorder()
 
-	d.E.ServeHTTP(rec, req)
+	d.e.ServeHTTP(rec, req)
 
 	var response app.GetSiteResponse
 	if rec.Code < 300 {
@@ -88,7 +93,7 @@ func (d *TestDriver) GetSite(siteID string) ApiResponse[app.GetSiteResponse] {
 
 // comments
 
-func (d *TestDriver) CreateComment(request app.CreateCommentRequest) ApiResponse[any] {
+func (d *TestDriver) CreateComment(request app.CreateCommentRequest) ApiResponse[app.CreateCommentResponse] {
 	var payload struct {
 		Author string `json:"author"`
 		Text   string `json:"text"`
@@ -100,10 +105,17 @@ func (d *TestDriver) CreateComment(request app.CreateCommentRequest) ApiResponse
 	req.Header.Set("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
 
-	d.E.ServeHTTP(rec, req)
+	d.e.ServeHTTP(rec, req)
 
-	return ApiResponse[any]{
-		StatusCode: rec.Code,
+	var response app.CreateCommentResponse
+	if rec.Code < 300 {
+		bufferToStruct(d.t, rec.Body, &response)
+	}
+
+	return ApiResponse[app.CreateCommentResponse]{
+		StatusCode:  rec.Code,
+		Response:    response,
+		RawResponse: bufferToJson(d.t, rec.Body),
 	}
 }
 
@@ -112,7 +124,7 @@ func (d *TestDriver) GetComments(siteID string, resource string) ApiResponse[[]a
 	req.Header.Set("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
 
-	d.E.ServeHTTP(rec, req)
+	d.e.ServeHTTP(rec, req)
 
 	var response []app.GetCommentResponse
 	if rec.Code < 300 {

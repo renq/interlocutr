@@ -56,11 +56,11 @@ func (h *CommentsHandlers) CreateComment(c *echo.Context) error {
 		return err
 	}
 
-	err := h.app.CreateComment(*comment)
+	response, err := h.app.CreateComment(*comment)
 	if err != nil {
 		return err
 	}
 
 	// TODO: return ID?
-	return c.JSON(http.StatusCreated, nil)
+	return c.JSON(http.StatusCreated, response)
 }
