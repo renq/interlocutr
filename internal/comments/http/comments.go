@@ -30,7 +30,7 @@ func NewCommentsHandlers(e *echo.Echo, app *app.App) CommentsHandlers {
 // @Produce      json
 // @Param        site      path      string  true  "Site identifier"
 // @Param        resource  path      string  true  "Resource identifier"
-// @Success      200       {object}  []app.CommentsResponse
+// @Success      200       {object}  []app.GetCommentResponse
 // @Failure      400       {object}  infrastructure.ErrorResponse
 // @Router       /api/{site}/{resource}/comments [get]
 func (h *CommentsHandlers) GetComments(c *echo.Context) error {

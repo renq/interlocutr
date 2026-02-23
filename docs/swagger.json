@@ -132,7 +132,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/app.CommentsResponse"
+                                "$ref": "#/definitions/app.GetCommentResponse"
                             }
                         }
                     },
@@ -248,20 +248,6 @@
         }
     },
     "definitions": {
-        "app.CommentsResponse": {
-            "type": "object",
-            "properties": {
-                "author": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "text": {
-                    "type": "string"
-                }
-            }
-        },
         "app.CreateCommentRequest": {
             "type": "object",
             "properties": {
@@ -297,6 +283,20 @@
             "type": "object",
             "properties": {
                 "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "app.GetCommentResponse": {
+            "type": "object",
+            "properties": {
+                "author": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "text": {
                     "type": "string"
                 }
             }

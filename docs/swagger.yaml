@@ -1,13 +1,4 @@
 definitions:
-  app.CommentsResponse:
-    properties:
-      author:
-        type: string
-      created_at:
-        type: string
-      text:
-        type: string
-    type: object
   app.CreateCommentRequest:
     properties:
       author:
@@ -31,6 +22,15 @@ definitions:
   app.CreateSiteResponse:
     properties:
       id:
+        type: string
+    type: object
+  app.GetCommentResponse:
+    properties:
+      author:
+        type: string
+      created_at:
+        type: string
+      text:
         type: string
     type: object
   app.GetSiteResponse:
@@ -83,7 +83,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/app.CommentsResponse'
+              $ref: '#/definitions/app.GetCommentResponse'
             type: array
         "400":
           description: Bad Request
