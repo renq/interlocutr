@@ -1,6 +1,6 @@
 module github.com/renq/interlocutr
 
-go 1.25.0
+go 1.26.0
 
 require (
 	github.com/evilmartians/lefthook v1.13.6

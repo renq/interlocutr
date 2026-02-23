@@ -2,14 +2,11 @@ package tests
 
 import (
 	"net/http"
-	"net/http/httptest"
-	"strings"
 	"testing"
 	"time"
 
-	"github.com/renq/interlocutr/cmd"
+	"github.com/go-faker/faker/v4"
 	"github.com/renq/interlocutr/internal/comments/app"
-	"github.com/renq/interlocutr/internal/comments/factory"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -31,13 +28,17 @@ func TestCreateAndGetComments(t *testing.T) {
 	})
 	assert.Equal(t, createSiteResponse.StatusCode, http.StatusCreated)
 
-	// Act 1 - create comment
-	createCommentResponse := driver.CreateComment(app.CreateCommentRequest{
+	// Arrange - new comment
+
+	newComment := app.CreateCommentRequest{
 		Site:     "test-site",
 		Resource: "1",
-		Author:   "Michał",
-		Text:     "Jakiś tekst",
-	})
+		Author:   faker.Name(),
+		Text:     faker.Paragraph(),
+	}
+
+	// Act 1 - create comment
+	createCommentResponse := driver.CreateComment(newComment)
 
 	// Assert 1
 	assert.Equal(t, http.StatusCreated, createCommentResponse.StatusCode)
@@ -47,48 +48,26 @@ func TestCreateAndGetComments(t *testing.T) {
 
 	// Assert 2
 	assert.Equal(t, http.StatusOK, getCommentsResponse.StatusCode)
-
 	assert.Equal(t, []app.GetCommentResponse{
 		{
-			Author:    "Michał",
-			Text:      "Jakiś tekst",
+			Author:    newComment.Author,
+			Text:      newComment.Text,
 			CreatedAt: now,
 		}}, getCommentsResponse.Response)
-
-	// req := httptest.NewRequest(http.MethodGet, "/api/test-site/1/comments", nil)
-	// rec := httptest.NewRecorder()
-
-	// expectedJson := `[{
-	// 	"author": "Michał",
-	// 	"text": "Jakiś tekst",
-	// 	"created_at": "2026-01-06T01:12:12Z"
-	// }]`
-
-	// // Act
-	// e.ServeHTTP(rec, req)
-
-	// // Assert
-	// assert.Equal(t, http.StatusOK, rec.Code)
-	// assert.JSONEq(t, expectedJson, rec.Body.String())
 }
 
 func TestCommentCanBeAddedOnlyToValidSite(t *testing.T) {
 	t.Parallel()
 
-	app := factory.BuildApp()
-	e := cmd.NewServer(app)
+	driver := NewTestDriver(t)
 
-	createJson := `{
-		"author": "Michał",
-		"text": "Jakiś tekst"
-	}`
-	req := httptest.NewRequest(http.MethodPost, "/api/abcde/1/comments", strings.NewReader(createJson))
-	req.Header.Set("Content-Type", "application/json")
-	rec := httptest.NewRecorder()
-
-	// Act
-	e.ServeHTTP(rec, req)
+	response := driver.CreateComment(app.CreateCommentRequest{
+		Site:     "non-existent-site",
+		Resource: "1",
+		Author:   "any",
+		Text:     "any",
+	})
 
 	// Assert 1
-	assert.Equal(t, http.StatusNotFound, rec.Code)
+	assert.Equal(t, http.StatusNotFound, response.StatusCode)
 }
