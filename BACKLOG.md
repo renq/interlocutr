@@ -1,13 +1,10 @@
 # The backlog
 
+1. Install golang-migrate and sqlx and create repository implementations using SQLite. Try to use exactly the same tests cases for all repository implementations.
 1. Improve auth mechamism and create something more sophisticated than hardcoded login and password. dd possibility to define users. User should have an ID because I'll need this later.
 1. Create two entrypoints for use cases: web and command line
 1. Rethink directory structure.
-
-
-Plan:
-- POST /api/admin/sites + pyload. Should should create a new site.
-- GET /api/admin/sites. Should require valid authentication. User should see only their websites.
+1. Create JS code to render comments. Maybe we can skip JS and use something like https://github.com/donseba/go-htmx?
 
 
 ## High priority
