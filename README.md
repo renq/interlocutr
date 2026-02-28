@@ -2,6 +2,8 @@
 
 It's a project for fun. Don't look at it unless you want to waste your time.
 
+[![Go](https://github.com/renq/interlocutr/actions/workflows/go.yml/badge.svg)](https://github.com/renq/interlocutr/actions/workflows/go.yml)
+
 ## Code snippets (for me)
 
 Before I forgot:
