@@ -2,7 +2,7 @@ package factory
 
 import (
 	"github.com/renq/interlocutr/internal/comments/app"
-	"github.com/renq/interlocutr/internal/comments/infrastructure"
+	infrastructure "github.com/renq/interlocutr/internal/comments/infrastructure/in_memory"
 )
 
 func BuildApp() *app.App {

@@ -7,7 +7,7 @@ import (
 
 	"github.com/go-faker/faker/v4"
 	"github.com/renq/interlocutr/internal/comments/app"
-	"github.com/renq/interlocutr/internal/comments/infrastructure"
+	infrastructure "github.com/renq/interlocutr/internal/comments/infrastructure/in_memory"
 	"github.com/stretchr/testify/assert"
 )
 
