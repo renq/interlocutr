@@ -296,6 +296,9 @@
                 "created_at": {
                     "type": "string"
                 },
+                "id": {
+                    "type": "string"
+                },
                 "text": {
                     "type": "string"
                 }
