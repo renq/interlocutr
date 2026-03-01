@@ -1,4 +1,4 @@
-package infrastructure_test
+package in_memory_test
 
 import (
 	"testing"

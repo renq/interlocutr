@@ -1,4 +1,4 @@
-package infrastructure
+package in_memory
 
 import (
 	"errors"
