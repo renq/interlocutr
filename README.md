@@ -37,3 +37,7 @@ lefthook run lints
 # coverage
 go test -v -coverprofile=cover.out -coverpkg=./... ./... && go tool cover -html=cover.out
 ```
+
+## SQLX tutorial
+
+https://jmoiron.github.io/sqlx/

@@ -20,3 +20,4 @@
 1. Verify that referrer header matches to site settings
 1. Create comment confirmation email
 1. Create comment confirmation API
+1. Handle spam and moderation.

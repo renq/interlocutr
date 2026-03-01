@@ -1,3 +1,7 @@
 /tmp
 /tools/c4/out/*
 !.gitkeep
+
+# ignore everything in data except the .gitkeep file
+/data/*
+!/data/.gitkeep
