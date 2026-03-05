@@ -13,8 +13,8 @@ pre-commit:
       glob: "*/http/*.go"
       run: swag init --outputTypes=json,yaml .
     test:
-      glob: "*.go"
-      run: go test ./...
+      run: make test
+      root: .
 
 lints:
   parallel: true
@@ -26,5 +26,5 @@ lints:
       run: golangci-lint run
       root: .
     test:
-      run: go test ./...
+      run: make test
       root: .

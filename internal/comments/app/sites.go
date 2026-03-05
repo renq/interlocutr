@@ -1,8 +1,8 @@
 package app
 
 type Site struct {
-	ID      string
-	Domains []string
+	ID      string   `db:"id"`
+	Domains []string `db:"domains"`
 }
 
 type CreateSiteRequest struct {
@@ -24,14 +24,14 @@ type GetSiteResponse struct {
 }
 
 func (a *App) CreateSite(command CreateSiteRequest) (CreateSiteResponse, error) {
-	site, err := a.SitesStorage.CreateSite(Site(command))
+	id, err := a.SitesStorage.CreateSite(Site(command))
 
 	if err != nil {
 		return CreateSiteResponse{}, err
 	}
 
 	return CreateSiteResponse{
-		ID: site.ID,
+		ID: id,
 	}, nil
 }
 

@@ -1,16 +1,30 @@
-package in_memory_test
+package sqlite3_test
 
 import (
+	"os"
+	"strings"
 	"testing"
 
+	"github.com/jmoiron/sqlx"
 	"github.com/renq/interlocutr/internal/comments/app"
-	infrastructure "github.com/renq/interlocutr/internal/comments/infrastructure/in_memory"
+	"github.com/renq/interlocutr/internal/comments/infrastructure/sqlite3"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewInMemorySitesStorage(t *testing.T) {
+func TestNewSqlStorage(t *testing.T) {
 	t.Parallel()
-	storage := infrastructure.NewInMemorySitesStorage()
+
+	db := ConnectToTestDB()
+
+	// ctx := context.Background()
+	// tx := db.MustBeginTx(ctx, nil)
+	t.Cleanup(func() {
+		// tx.Rollback()
+		db.MustExec("DELETE FROM sites")
+	})
+	// << temp
+
+	storage := sqlite3.NewInSqlxSitesStorage(db)
 
 	t.Run("returns error if site not found", func(t *testing.T) {
 		_, err := storage.GetSite("non-existing-site")
@@ -55,8 +69,18 @@ func TestNewInMemorySitesStorage(t *testing.T) {
 	})
 }
 
-func TestInMemorySitesStorage_ConcurrentCreateAndGet(t *testing.T) {
-	s := infrastructure.NewInMemorySitesStorage()
+func TestInSqlSitesStorage_ConcurrentCreateAndGet(t *testing.T) {
+	db := ConnectToTestDB()
+
+	// ctx := context.Background()
+	// tx := db.MustBeginTx(ctx, nil)
+	t.Cleanup(func() {
+		// tx.Rollback()
+		db.MustExec("DELETE FROM sites")
+	})
+	// << temp
+
+	s := sqlite3.NewInSqlxSitesStorage(db)
 	ids := makeIDs(20)
 
 	t.Run("concurrent create", func(t *testing.T) {
@@ -79,4 +103,16 @@ func TestInMemorySitesStorage_ConcurrentCreateAndGet(t *testing.T) {
 			t.Fatalf("missing site %s: %v", id, err)
 		}
 	}
+}
+
+func ConnectToTestDB() *sqlx.DB {
+	appDB := os.Getenv("APP_DB")
+
+	dsn := strings.TrimPrefix(appDB, "sqlite3://")
+	db := sqlx.MustConnect("sqlite3", dsn)
+
+	db.SetConnMaxIdleTime(5)
+	db.SetMaxOpenConns(10)
+
+	return db
 }

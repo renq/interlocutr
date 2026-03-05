@@ -41,3 +41,4 @@ go test -v -coverprofile=cover.out -coverpkg=./... ./... && go tool cover -html=
 ## SQLX tutorial
 
 https://jmoiron.github.io/sqlx/
+https://dev.to/jones_charles_ad50858dbc0/sqlx-your-go-to-database-toolkit-for-go-developers-53n8
