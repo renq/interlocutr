@@ -22,7 +22,7 @@ func NewInSqlxSitesStorage(db *sqlx.DB) app.SitesStorage {
 	}
 }
 
-func (s *SqlxSitesStorege) CreateSite(site app.Site) (string, error) {
+func (s *SqlxSitesStorege) CreateSite(ctx context.Context, site app.Site) (string, error) {
 	domains, err := json.Marshal(site.Domains)
 	if err != nil {
 		return "", err // This should never happen, as domains is always a valid slice of strings.
@@ -56,7 +56,7 @@ func (s *SqlxSitesStorege) CreateSite(site app.Site) (string, error) {
 	return site.ID, nil
 }
 
-func (s *SqlxSitesStorege) GetSite(ID string) (app.Site, error) {
+func (s *SqlxSitesStorege) GetSite(ctx context.Context, ID string) (app.Site, error) {
 	site := app.Site{}
 
 	var row struct {
@@ -64,8 +64,7 @@ func (s *SqlxSitesStorege) GetSite(ID string) (app.Site, error) {
 		Domains []byte `db:"domains"`
 	}
 
-	// TODO Pass context to GetSite
-	err := s.db.GetContext(context.Background(), &row, "SELECT id, domains FROM sites WHERE id = ?", ID)
+	err := s.db.GetContext(ctx, &row, "SELECT id, domains FROM sites WHERE id = ?", ID)
 
 	if errors.Is(err, sql.ErrNoRows) {
 		return site, app.ErrorNotFound

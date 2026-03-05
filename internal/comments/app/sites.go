@@ -1,5 +1,7 @@
 package app
 
+import "context"
+
 type Site struct {
 	ID      string   `db:"id"`
 	Domains []string `db:"domains"`
@@ -23,8 +25,8 @@ type GetSiteResponse struct {
 	Domains []string `json:"domains"`
 }
 
-func (a *App) CreateSite(command CreateSiteRequest) (CreateSiteResponse, error) {
-	id, err := a.SitesStorage.CreateSite(Site(command))
+func (a *App) CreateSite(ctx context.Context, command CreateSiteRequest) (CreateSiteResponse, error) {
+	id, err := a.SitesStorage.CreateSite(ctx, Site(command))
 
 	if err != nil {
 		return CreateSiteResponse{}, err
@@ -35,8 +37,8 @@ func (a *App) CreateSite(command CreateSiteRequest) (CreateSiteResponse, error) 
 	}, nil
 }
 
-func (a *App) GetSite(command GetSiteRequest) (GetSiteResponse, error) {
-	site, err := a.SitesStorage.GetSite(command.ID)
+func (a *App) GetSite(ctx context.Context, command GetSiteRequest) (GetSiteResponse, error) {
+	site, err := a.SitesStorage.GetSite(ctx, command.ID)
 
 	if err != nil {
 		return GetSiteResponse{}, err

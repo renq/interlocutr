@@ -1,6 +1,7 @@
 package app
 
 import (
+	"context"
 	"time"
 
 	"github.com/google/uuid"
@@ -50,7 +51,8 @@ func (a *App) GetComments() []GetCommentResponse {
 }
 
 func (a *App) CreateComment(command CreateCommentRequest) (CreateCommentResponse, error) {
-	_, err := a.SitesStorage.GetSite(command.Site)
+	ctx := context.Background() // pass the context as an argument
+	_, err := a.SitesStorage.GetSite(ctx, command.Site)
 	if err != nil {
 		return CreateCommentResponse{}, err
 	}

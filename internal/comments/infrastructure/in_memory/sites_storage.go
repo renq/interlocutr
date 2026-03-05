@@ -1,6 +1,7 @@
 package in_memory
 
 import (
+	"context"
 	"sync"
 
 	"github.com/renq/interlocutr/internal/comments/app"
@@ -19,7 +20,7 @@ func NewInMemorySitesStorage() app.SitesStorage {
 	}
 }
 
-func (s *InMemorySitesStorege) CreateSite(site app.Site) (string, error) {
+func (s *InMemorySitesStorege) CreateSite(_ctx context.Context, site app.Site) (string, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -32,7 +33,7 @@ func (s *InMemorySitesStorege) CreateSite(site app.Site) (string, error) {
 	return site.ID, nil
 }
 
-func (s *InMemorySitesStorege) GetSite(ID string) (app.Site, error) {
+func (s *InMemorySitesStorege) GetSite(_ctx context.Context, ID string) (app.Site, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 

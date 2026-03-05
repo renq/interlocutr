@@ -41,7 +41,7 @@ func (h *SitesHandlers) CreateSite(c *echo.Context) error {
 		return err
 	}
 
-	response, err := h.app.CreateSite(*request)
+	response, err := h.app.CreateSite(c.Request().Context(), *request)
 	if err != nil {
 		return err
 	}
@@ -68,7 +68,7 @@ func (h *SitesHandlers) GetSite(c *echo.Context) error {
 		return err
 	}
 
-	response, err := h.app.GetSite(*request)
+	response, err := h.app.GetSite(c.Request().Context(), *request)
 	if err != nil {
 		return err
 	}

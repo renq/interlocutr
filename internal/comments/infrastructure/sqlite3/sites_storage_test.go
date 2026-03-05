@@ -1,6 +1,7 @@
 package sqlite3_test
 
 import (
+	"context"
 	"os"
 	"strings"
 	"testing"
@@ -15,6 +16,7 @@ func TestNewSqlStorage(t *testing.T) {
 	t.Parallel()
 
 	db := ConnectToTestDB()
+	ctx := context.Background()
 
 	// ctx := context.Background()
 	// tx := db.MustBeginTx(ctx, nil)
@@ -27,7 +29,7 @@ func TestNewSqlStorage(t *testing.T) {
 	storage := sqlite3.NewInSqlxSitesStorage(db)
 
 	t.Run("returns error if site not found", func(t *testing.T) {
-		_, err := storage.GetSite("non-existing-site")
+		_, err := storage.GetSite(ctx, "non-existing-site")
 		assert.Equal(t, err, app.ErrorNotFound)
 	})
 
@@ -39,11 +41,11 @@ func TestNewSqlStorage(t *testing.T) {
 			Domains: []string{"example.com", "example.org"},
 		}
 
-		_, err := storage.CreateSite(site)
+		_, err := storage.CreateSite(ctx, site)
 		assert.NoError(t, err)
 
 		// Act
-		retrievedSite, err := storage.GetSite(siteID)
+		retrievedSite, err := storage.GetSite(ctx, siteID)
 
 		// Assert
 		assert.NoError(t, err)
@@ -58,11 +60,11 @@ func TestNewSqlStorage(t *testing.T) {
 			Domains: []string{"example.com", "example.org"},
 		}
 
-		_, err := storage.CreateSite(site)
+		_, err := storage.CreateSite(ctx, site)
 		assert.NoError(t, err)
 
 		// Act
-		_, err = storage.CreateSite(site)
+		_, err = storage.CreateSite(ctx, site)
 
 		// Assert
 		assert.Equal(t, err, app.ErrorAlreadyExists)
@@ -71,6 +73,7 @@ func TestNewSqlStorage(t *testing.T) {
 
 func TestInSqlSitesStorage_ConcurrentCreateAndGet(t *testing.T) {
 	db := ConnectToTestDB()
+	ctx := context.Background()
 
 	// ctx := context.Background()
 	// tx := db.MustBeginTx(ctx, nil)
@@ -85,21 +88,21 @@ func TestInSqlSitesStorage_ConcurrentCreateAndGet(t *testing.T) {
 
 	t.Run("concurrent create", func(t *testing.T) {
 		runConcurrently(t, ids, func(id string) error {
-			_, err := s.CreateSite(app.Site{ID: id})
+			_, err := s.CreateSite(ctx, app.Site{ID: id})
 			return err
 		})
 	})
 
 	t.Run("concurrent get", func(t *testing.T) {
 		runConcurrently(t, ids, func(id string) error {
-			_, err := s.GetSite(id)
+			_, err := s.GetSite(ctx, id)
 			return err
 		})
 	})
 
 	// Final consistency check
 	for _, id := range ids {
-		if _, err := s.GetSite(id); err != nil {
+		if _, err := s.GetSite(ctx, id); err != nil {
 			t.Fatalf("missing site %s: %v", id, err)
 		}
 	}
