@@ -26,7 +26,7 @@ func TestNewSqlStorage(t *testing.T) {
 	})
 	// << temp
 
-	storage := sqlite3.NewInSqlxSitesStorage(db)
+	storage := sqlite3.NewSqliteSitesStorage(db)
 
 	t.Run("returns error if site not found", func(t *testing.T) {
 		_, err := storage.GetSite(ctx, "non-existing-site")
@@ -83,7 +83,7 @@ func TestInSqlSitesStorage_ConcurrentCreateAndGet(t *testing.T) {
 	})
 	// << temp
 
-	s := sqlite3.NewInSqlxSitesStorage(db)
+	s := sqlite3.NewSqliteSitesStorage(db)
 	ids := makeIDs(20)
 
 	t.Run("concurrent create", func(t *testing.T) {

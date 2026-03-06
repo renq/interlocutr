@@ -16,7 +16,7 @@ type SqlxSitesStorege struct {
 	db *sqlx.DB
 }
 
-func NewInSqlxSitesStorage(db *sqlx.DB) app.SitesStorage {
+func NewSqliteSitesStorage(db *sqlx.DB) app.SitesStorage {
 	return &SqlxSitesStorege{
 		db: db,
 	}
