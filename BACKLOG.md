@@ -1,6 +1,8 @@
 # The backlog
 
-1. Install golang-migrate and sqlx and create repository implementations using SQLite. Try to use exactly the same tests cases for all repository implementations.
+1. Add jwt tests to test_driver.
+1. Implement sqlite3 sites repo.
+1. Try to use exactly the same tests cases for all repository implementations. Test app with two types of repositories.
 1. Improve auth mechamism and create something more sophisticated than hardcoded login and password. dd possibility to define users. User should have an ID because I'll need this later.
 1. Create two entrypoints for use cases: web and command line
 1. Rethink directory structure.
