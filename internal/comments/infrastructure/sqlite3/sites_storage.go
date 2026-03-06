@@ -37,8 +37,7 @@ func (s *SqlxSitesStorege) CreateSite(ctx context.Context, site app.Site) (strin
 	}
 
 	query := `INSERT INTO sites (id, domains) VALUES (:id, :domains)`
-	// TODO Pass context to CreateSite
-	_, err = s.db.NamedExecContext(context.Background(), query, params)
+	_, err = s.db.NamedExecContext(ctx, query, params)
 
 	// handle sqlite errors
 	if sqliteErr, ok := err.(sqlite3.Error); ok {

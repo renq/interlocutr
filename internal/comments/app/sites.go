@@ -3,8 +3,8 @@ package app
 import "context"
 
 type Site struct {
-	ID      string   `db:"id"`
-	Domains []string `db:"domains"`
+	ID      string
+	Domains []string
 }
 
 type CreateSiteRequest struct {
