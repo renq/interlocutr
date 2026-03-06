@@ -1,6 +1,7 @@
 package in_memory
 
 import (
+	"context"
 	"errors"
 	"sync"
 
@@ -26,7 +27,7 @@ func NewInMemoryCommentsStorage() app.CommentsStorage {
 	}
 }
 
-func (s *InMemoryCommentsStorage) CreateComment(comment app.Comment) error {
+func (s *InMemoryCommentsStorage) CreateComment(_ context.Context, comment app.Comment) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -41,7 +42,7 @@ func (s *InMemoryCommentsStorage) CreateComment(comment app.Comment) error {
 	return nil
 }
 
-func (s *InMemoryCommentsStorage) GetComments(site, resource string) ([]app.Comment, error) {
+func (s *InMemoryCommentsStorage) GetComments(_ context.Context, site, resource string) ([]app.Comment, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 

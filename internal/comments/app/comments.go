@@ -27,6 +27,11 @@ type CreateCommentResponse struct {
 	ID uuid.UUID `json:"id"`
 }
 
+type GetCommentsRequest struct {
+	Site     string `param:"site"`
+	Resource string `param:"resource"`
+}
+
 type GetCommentResponse struct {
 	ID        uuid.UUID `json:"id"`
 	Author    string    `json:"author"`
@@ -34,8 +39,8 @@ type GetCommentResponse struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
-func (a *App) GetComments() []GetCommentResponse {
-	comments, _ := a.CommentsStorage.GetComments("", "")
+func (a *App) GetComments(ctx context.Context, get GetCommentsRequest) []GetCommentResponse {
+	comments, _ := a.CommentsStorage.GetComments(ctx, get.Site, get.Resource)
 	result := make([]GetCommentResponse, len(comments))
 
 	for i, comment := range comments {
@@ -50,8 +55,7 @@ func (a *App) GetComments() []GetCommentResponse {
 	return result
 }
 
-func (a *App) CreateComment(command CreateCommentRequest) (CreateCommentResponse, error) {
-	ctx := context.Background() // pass the context as an argument
+func (a *App) CreateComment(ctx context.Context, command CreateCommentRequest) (CreateCommentResponse, error) {
 	_, err := a.SitesStorage.GetSite(ctx, command.Site)
 	if err != nil {
 		return CreateCommentResponse{}, err
@@ -62,8 +66,10 @@ func (a *App) CreateComment(command CreateCommentRequest) (CreateCommentResponse
 		return CreateCommentResponse{}, err
 	}
 
-	return CreateCommentResponse{}, a.CommentsStorage.CreateComment(Comment{
+	return CreateCommentResponse{}, a.CommentsStorage.CreateComment(ctx, Comment{
 		ID:        ID,
+		Site:      command.Site,
+		Resource:  command.Resource,
 		Author:    command.Author,
 		Text:      command.Text,
 		CreatedAt: a.Clock.Now(),

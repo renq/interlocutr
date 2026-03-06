@@ -1,6 +1,7 @@
 package in_memory_test
 
 import (
+	"context"
 	"fmt"
 	"testing"
 	"time"
@@ -13,60 +14,63 @@ import (
 
 func TestCommentsCanBeStoredAndRead(t *testing.T) {
 	t.Parallel()
+	ctx := context.Background()
 	storage := infrastructure.NewInMemoryCommentsStorage()
 
 	t.Run("in a single page and post", func(t *testing.T) {
 		comment1 := aComment("site1", "page1")
 		comment2 := aComment("site1", "page1")
-		assert.NoError(t, storage.CreateComment(comment1))
-		assert.NoError(t, storage.CreateComment(comment2))
+		assert.NoError(t, storage.CreateComment(ctx, comment1))
+		assert.NoError(t, storage.CreateComment(ctx, comment2))
 
-		comments, _ := storage.GetComments("site1", "page1")
+		comments, _ := storage.GetComments(ctx, "site1", "page1")
 		assert.EqualValues(t, []app.Comment{comment1, comment2}, comments)
 	})
 
 	t.Run("can read comments only for a single site and post", func(t *testing.T) {
 		comment1 := aComment("site2", "page2_1")
 		comment2 := aComment("site3", "page3_1")
-		assert.NoError(t, storage.CreateComment(comment1))
-		assert.NoError(t, storage.CreateComment(comment2))
+		assert.NoError(t, storage.CreateComment(ctx, comment1))
+		assert.NoError(t, storage.CreateComment(ctx, comment2))
 
-		comments, _ := storage.GetComments("site2", "page2_1")
+		comments, _ := storage.GetComments(ctx, "site2", "page2_1")
 		assert.EqualValues(t, []app.Comment{comment1}, comments)
 	})
 }
 
 func TestBrokenStorage(t *testing.T) {
+	ctx := context.Background()
 	storage := infrastructure.InMemoryCommentsStorage{}
 	storage.Break()
 
 	t.Run("returns error on creating a new comment", func(t *testing.T) {
 		t.Parallel()
 
-		assert.Error(t, storage.CreateComment(aComment("any", "any")))
+		assert.Error(t, storage.CreateComment(ctx, aComment("any", "any")))
 	})
 
 	t.Run("returns error on trying to read comments", func(t *testing.T) {
 		t.Parallel()
 
-		_, error := storage.GetComments("any", "any")
+		_, error := storage.GetComments(ctx, "any", "any")
 		assert.Error(t, error)
 	})
 }
 
 func TestInMemoryCommentsStorage_ConcurrentCreateAndGet(t *testing.T) {
+	ctx := context.Background()
 	s := infrastructure.NewInMemoryCommentsStorage()
 	comments := makeComments(200, "site-conc", "page-conc")
 
 	t.Run("concurrent create", func(t *testing.T) {
 		runConcurrently(t, comments, func(c app.Comment) error {
-			return s.CreateComment(c)
+			return s.CreateComment(ctx, c)
 		})
 	})
 
 	t.Run("concurrent get", func(t *testing.T) {
 		runConcurrently(t, comments, func(c app.Comment) error {
-			got, err := s.GetComments(c.Site, c.Resource)
+			got, err := s.GetComments(ctx, c.Site, c.Resource)
 			if err != nil {
 				return err
 			}
@@ -80,7 +84,7 @@ func TestInMemoryCommentsStorage_ConcurrentCreateAndGet(t *testing.T) {
 	})
 
 	// Final deterministic check
-	all, err := s.GetComments("site-conc", "page-conc")
+	all, err := s.GetComments(ctx, "site-conc", "page-conc")
 	if err != nil {
 		t.Fatalf("unexpected error reading final comments: %v", err)
 	}

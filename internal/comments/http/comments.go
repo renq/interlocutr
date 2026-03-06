@@ -34,7 +34,13 @@ func NewCommentsHandlers(e *echo.Echo, app *app.App) CommentsHandlers {
 // @Failure      400       {object}  infrastructure.ErrorResponse
 // @Router       /api/{site}/{resource}/comments [get]
 func (h *CommentsHandlers) GetComments(c *echo.Context) error {
-	return c.JSON(http.StatusOK, h.app.GetComments())
+	get := new(app.GetCommentsRequest{})
+
+	if err := c.Bind(get); err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, h.app.GetComments(c.Request().Context(), *get))
 }
 
 // CreateComment godoc
@@ -56,11 +62,10 @@ func (h *CommentsHandlers) CreateComment(c *echo.Context) error {
 		return err
 	}
 
-	response, err := h.app.CreateComment(*comment)
+	response, err := h.app.CreateComment(c.Request().Context(), *comment)
 	if err != nil {
 		return err
 	}
 
-	// TODO: return ID?
 	return c.JSON(http.StatusCreated, response)
 }
