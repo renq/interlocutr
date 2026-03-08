@@ -12,7 +12,7 @@ func NewTokenHandler(e *echo.Echo) {
 	e.POST("/oauth/token", tokenHandler)
 }
 
-type loginRequest struct {
+type LoginRequest struct {
 	Username string `form:"username" json:"username"`
 	Password string `form:"password" json:"password"`
 }
@@ -41,7 +41,7 @@ type JwtResponse struct {
 // @Failure      400       {object}  infrastructure.ErrorResponse
 // @Router       /oauth/token [post]
 func tokenHandler(c *echo.Context) error {
-	formData := loginRequest{}
+	formData := LoginRequest{}
 	bindError := c.Bind(&formData)
 	if bindError != nil {
 		return c.JSON(http.StatusBadRequest, bindError)

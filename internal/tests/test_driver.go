@@ -4,17 +4,25 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v5"
 	"github.com/renq/interlocutr/cmd"
+	token "github.com/renq/interlocutr/internal/auth"
 	"github.com/renq/interlocutr/internal/comments/app"
 	"github.com/renq/interlocutr/internal/comments/factory"
 )
+
+type Response struct {
+	StatusCode int
+	Body       *bytes.Buffer
+}
 
 type ApiResponse[T any] struct {
 	StatusCode  int
@@ -39,7 +47,8 @@ func NewTestDriver(t *testing.T) TestDriver {
 }
 
 func (d *TestDriver) LoginAsAdmin() {
-	d.jwtToken = getJWTToken(d.t, d.e)
+	response := d.GetJWTToken(token.LoginRequest{Username: "admin", Password: "secret"})
+	d.jwtToken = response.Response.Token
 }
 
 func (d *TestDriver) FreezeTime(time time.Time) {
@@ -53,92 +62,141 @@ func (d *TestDriver) GetNextIDValues(n int) []uuid.UUID {
 // sites
 
 func (d *TestDriver) CreateSite(request app.CreateSiteRequest) ApiResponse[app.CreateSiteResponse] {
-	req := httptest.NewRequest(http.MethodPost, "/api/admin/site", d.toBody(request))
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer "+d.jwtToken)
-	rec := httptest.NewRecorder()
-
-	d.e.ServeHTTP(rec, req)
+	res := d.Request(
+		http.MethodPost,
+		"/api/admin/site",
+		d.toBody(request),
+		map[string][]string{
+			"Content-Type":  {"application/json"},
+			"Authorization": {"Bearer " + d.jwtToken},
+		},
+	)
 
 	var response app.CreateSiteResponse
-	if rec.Code < 300 {
-		bufferToStruct(d.t, rec.Body, &response)
+	if res.StatusCode < 300 {
+		bufferToStruct(d.t, res.Body, &response)
 	}
+
 	return ApiResponse[app.CreateSiteResponse]{
-		StatusCode:  rec.Code,
+		StatusCode:  res.StatusCode,
 		Response:    response,
-		RawResponse: bufferToJson(d.t, rec.Body),
+		RawResponse: bufferToJson(d.t, res.Body),
 	}
 }
 
 func (d *TestDriver) GetSite(siteID string) ApiResponse[app.GetSiteResponse] {
-	req := httptest.NewRequest(http.MethodGet, "/api/admin/site/"+siteID, nil)
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer "+d.jwtToken)
-	rec := httptest.NewRecorder()
-
-	d.e.ServeHTTP(rec, req)
+	res := d.Request(
+		http.MethodGet,
+		"/api/admin/site/"+siteID,
+		nil,
+		map[string][]string{
+			"Content-Type":  {"application/json"},
+			"Authorization": {"Bearer " + d.jwtToken},
+		},
+	)
 
 	var response app.GetSiteResponse
-	if rec.Code < 300 {
-		bufferToStruct(d.t, rec.Body, &response)
+	if res.StatusCode < 300 {
+		bufferToStruct(d.t, res.Body, &response)
 	}
 
 	return ApiResponse[app.GetSiteResponse]{
-		StatusCode:  rec.Code,
+		StatusCode:  res.StatusCode,
 		Response:    response,
-		RawResponse: bufferToJson(d.t, rec.Body),
+		RawResponse: bufferToJson(d.t, res.Body),
 	}
 }
 
 // comments
 
 func (d *TestDriver) CreateComment(request app.CreateCommentRequest) ApiResponse[app.CreateCommentResponse] {
-	var payload struct {
-		Author string `json:"author"`
-		Text   string `json:"text"`
-	}
-	payload.Author = request.Author
-	payload.Text = request.Text
-
-	req := httptest.NewRequest(http.MethodPost, fmt.Sprintf("/api/%s/%s/comments", request.Site, request.Resource), d.toBody(payload))
-	req.Header.Set("Content-Type", "application/json")
-	rec := httptest.NewRecorder()
-
-	d.e.ServeHTTP(rec, req)
+	res := d.Request(
+		http.MethodPost,
+		fmt.Sprintf("/api/%s/%s/comments", request.Site, request.Resource),
+		d.toBody(struct {
+			Author string `json:"author"`
+			Text   string `json:"text"`
+		}{Author: request.Author, Text: request.Text}),
+		map[string][]string{"Content-Type": {"application/json"}},
+	)
 
 	var response app.CreateCommentResponse
-	if rec.Code < 300 {
-		bufferToStruct(d.t, rec.Body, &response)
+	if res.StatusCode < 300 {
+		bufferToStruct(d.t, res.Body, &response)
 	}
 
 	return ApiResponse[app.CreateCommentResponse]{
-		StatusCode:  rec.Code,
+		StatusCode:  res.StatusCode,
 		Response:    response,
-		RawResponse: bufferToJson(d.t, rec.Body),
+		RawResponse: bufferToJson(d.t, res.Body),
 	}
 }
 
 func (d *TestDriver) GetComments(siteID string, resource string) ApiResponse[[]app.GetCommentResponse] {
-	req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/api/%s/%s/comments", siteID, resource), nil)
-	req.Header.Set("Content-Type", "application/json")
-	rec := httptest.NewRecorder()
-
-	d.e.ServeHTTP(rec, req)
+	res := d.Request(
+		http.MethodGet,
+		fmt.Sprintf("/api/%s/%s/comments", siteID, resource),
+		nil,
+		map[string][]string{"Content-Type": {"application/json"}},
+	)
 
 	var response []app.GetCommentResponse
-	if rec.Code < 300 {
-		bufferToStruct(d.t, rec.Body, &response)
+	if res.StatusCode < 300 {
+		bufferToStruct(d.t, res.Body, &response)
 	}
 
 	return ApiResponse[[]app.GetCommentResponse]{
-		StatusCode: rec.Code,
+		StatusCode: res.StatusCode,
 		Response:   response,
 		// RawResponse: bufferToJson(d.t, rec.Body),
 	}
 }
 
+// jwt auth
+
+func (d *TestDriver) GetJWTToken(request token.LoginRequest) ApiResponse[token.JwtResponse] {
+	res := d.Request(
+		http.MethodPost,
+		"/oauth/token",
+		strings.NewReader("username="+request.Username+"&password="+request.Password),
+		map[string][]string{"Content-Type": {"application/x-www-form-urlencoded"}},
+	)
+
+	var response token.JwtResponse
+	if res.StatusCode < 300 {
+		bufferToStruct(d.t, res.Body, &response)
+	}
+
+	return ApiResponse[token.JwtResponse]{
+		StatusCode:  res.StatusCode,
+		Response:    response,
+		RawResponse: bufferToJson(d.t, res.Body),
+	}
+}
+
 //
+
+func (d *TestDriver) Request(
+	method string,
+	url string,
+	body io.Reader,
+	headers map[string][]string,
+) Response {
+	req := httptest.NewRequest(method, url, body)
+	for k, vals := range headers {
+		for _, v := range vals {
+			req.Header.Set(k, v)
+		}
+	}
+	rec := httptest.NewRecorder()
+
+	d.e.ServeHTTP(rec, req)
+
+	return Response{
+		StatusCode: rec.Code,
+		Body:       rec.Body,
+	}
+}
 
 func (d *TestDriver) toBody(v any) *bytes.Reader {
 	body, err := json.Marshal(v)
