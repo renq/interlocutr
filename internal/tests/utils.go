@@ -17,7 +17,7 @@ func bufferToJson(t *testing.T, body *bytes.Buffer) map[string]any {
 	return responseBody
 }
 
-func bufferToStruct(t *testing.T, body *bytes.Buffer, out interface{}) {
+func bufferToStruct(t *testing.T, body *bytes.Buffer, out any) {
 	if e := json.Unmarshal(body.Bytes(), out); e != nil {
 		assert.NoError(t, e)
 	}

@@ -105,7 +105,7 @@ func aComment(site, resource string) app.Comment {
 
 func makeComments(n int, site, resource string) []app.Comment {
 	comments := make([]app.Comment, n)
-	for i := 0; i < n; i++ {
+	for i := range n {
 		comments[i] = app.Comment{
 			Site:      site,
 			Resource:  resource,

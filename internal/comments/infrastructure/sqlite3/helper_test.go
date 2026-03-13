@@ -8,7 +8,7 @@ import (
 
 func makeIDs(n int) []string {
 	ids := make([]string, n)
-	for i := 0; i < n; i++ {
+	for i := range n {
 		ids[i] = fmt.Sprintf("id-%d", i)
 	}
 	return ids
@@ -20,14 +20,11 @@ func runConcurrently[T any](t *testing.T, items []T, worker func(T) error) {
 	errCh := make(chan error, len(items))
 
 	for _, it := range items {
-		it := it
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+		wg.Go(func() {
 			if err := worker(it); err != nil {
 				errCh <- err
 			}
-		}()
+		})
 	}
 
 	wg.Wait()
