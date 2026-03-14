@@ -1,18 +1,9 @@
 package in_memory_test
 
 import (
-	"fmt"
 	"sync"
 	"testing"
 )
-
-func makeIDs(n int) []string {
-	ids := make([]string, n)
-	for i := range n {
-		ids[i] = fmt.Sprintf("id-%d", i)
-	}
-	return ids
-}
 
 func runConcurrently[T any](t *testing.T, items []T, worker func(T) error) {
 	t.Helper()
