@@ -39,6 +39,7 @@ func RunSitesStorageTests(t *testing.T, storage app.SitesStorage) {
 }
 
 func RunSitesStorageConcurrentTests(t *testing.T, storage app.SitesStorage) {
+	// TODO Do we need these tests?
 	ctx := context.Background()
 
 	ids := makeIDs(20)

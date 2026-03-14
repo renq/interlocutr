@@ -54,6 +54,7 @@ func RunBrokenStorageTests(t *testing.T, storage app.CommentsStorage) {
 }
 
 func RunCommentsStorageConcurrentTests(t *testing.T, storage app.CommentsStorage) {
+	// TODO Do we need these tests?
 	ctx := context.Background()
 	comments := makeComments(200, "site-conc", "page-conc")
 

@@ -4,25 +4,20 @@ import (
 	"testing"
 
 	"github.com/renq/interlocutr/internal/comments/app/interfacestest"
-	infrastructure "github.com/renq/interlocutr/internal/comments/infrastructure/in_memory"
+	"github.com/renq/interlocutr/internal/comments/infrastructure/in_memory"
 )
 
 func TestCommentsCanBeStoredAndRead(t *testing.T) {
 	t.Parallel()
-	storage := infrastructure.NewInMemoryCommentsStorage()
-
-	interfacestest.RunCommentsCanBeStoredAndReadTests(t, storage)
+	interfacestest.RunCommentsCanBeStoredAndReadTests(t, in_memory.NewInMemoryCommentsStorage())
 }
 
 func TestBrokenStorage(t *testing.T) {
 	t.Parallel()
-	storage := infrastructure.NewInMemoryCommentsStorage()
-
-	interfacestest.RunBrokenStorageTests(t, storage)
+	interfacestest.RunBrokenStorageTests(t, in_memory.NewInMemoryCommentsStorage())
 }
 
 func TestInMemoryCommentsStorage_ConcurrentCreateAndGet(t *testing.T) {
 	t.Parallel()
-	storage := infrastructure.NewInMemoryCommentsStorage()
-	interfacestest.RunCommentsStorageConcurrentTests(t, storage)
+	interfacestest.RunCommentsStorageConcurrentTests(t, in_memory.NewInMemoryCommentsStorage())
 }
