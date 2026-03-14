@@ -10,4 +10,5 @@ type SitesStorage interface {
 type CommentsStorage interface {
 	CreateComment(ctx context.Context, comment Comment) error
 	GetComments(ctx context.Context, site, resource string) ([]Comment, error)
+	Break()
 }
