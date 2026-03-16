@@ -25,8 +25,9 @@ func NewSqliteCommentsStorage(db *sqlx.DB) app.CommentsStorage {
 }
 
 func (s *SqlxCommentsStorage) CreateComment(ctx context.Context, comment app.Comment) error {
+	pollute := ""
 	if s.broken {
-		return errors.New("storage is broken: can't store a new comment")
+		pollute = "pollute"
 	}
 
 	params := struct {
@@ -45,7 +46,7 @@ func (s *SqlxCommentsStorage) CreateComment(ctx context.Context, comment app.Com
 		CreatedAt: comment.CreatedAt,
 	}
 
-	query := `INSERT INTO comments (id, site, resource, author, text, created_at) 
+	query := pollute + `INSERT INTO comments (id, site, resource, author, text, created_at) 
 	VALUES (:id, :site, :resource, :author, :text, :created_at)`
 	_, err := s.db.NamedExecContext(ctx, query, params)
 
@@ -67,9 +68,9 @@ func (s *SqlxCommentsStorage) CreateComment(ctx context.Context, comment app.Com
 
 func (s *SqlxCommentsStorage) GetComments(ctx context.Context, site, resource string) ([]app.Comment, error) {
 	comments := []app.Comment{}
-
+	pollute := ""
 	if s.broken {
-		return comments, errors.New("storage is broken: can't read comments")
+		pollute = "pollute"
 	}
 
 	type row struct {
@@ -82,7 +83,7 @@ func (s *SqlxCommentsStorage) GetComments(ctx context.Context, site, resource st
 	}
 	var rows []row
 
-	err := s.db.SelectContext(ctx, &rows, "SELECT * FROM comments WHERE site = ? AND resource = ?", site, resource)
+	err := s.db.SelectContext(ctx, &rows, pollute+"SELECT * FROM comments WHERE site = ? AND resource = ?", site, resource)
 
 	if errors.Is(err, sql.ErrNoRows) {
 		return comments, nil
