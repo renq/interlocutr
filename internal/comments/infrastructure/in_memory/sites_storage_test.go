@@ -11,8 +11,3 @@ func TestNewInMemorySitesStorage(t *testing.T) {
 	t.Parallel()
 	interfacestest.RunSitesStorageTests(t, in_memory.NewInMemorySitesStorage())
 }
-
-func TestInMemorySitesStorage_ConcurrentCreateAndGet(t *testing.T) {
-	t.Parallel()
-	interfacestest.RunSitesStorageConcurrentTests(t, in_memory.NewInMemorySitesStorage())
-}

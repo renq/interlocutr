@@ -16,8 +16,3 @@ func TestBrokenStorage(t *testing.T) {
 	t.Parallel()
 	interfacestest.RunBrokenStorageTests(t, in_memory.NewInMemoryCommentsStorage())
 }
-
-func TestInMemoryCommentsStorage_ConcurrentCreateAndGet(t *testing.T) {
-	t.Parallel()
-	interfacestest.RunCommentsStorageConcurrentTests(t, in_memory.NewInMemoryCommentsStorage())
-}

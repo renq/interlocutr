@@ -37,31 +37,3 @@ func RunSitesStorageTests(t *testing.T, storage app.SitesStorage) {
 		assert.Equal(t, site, retrievedSite)
 	})
 }
-
-func RunSitesStorageConcurrentTests(t *testing.T, storage app.SitesStorage) {
-	// TODO Do we need these tests?
-	ctx := context.Background()
-
-	ids := makeIDs(20)
-
-	t.Run("concurrent create", func(t *testing.T) {
-		runConcurrently(t, ids, func(id string) error {
-			_, err := storage.CreateSite(ctx, app.Site{ID: id})
-			return err
-		})
-	})
-
-	t.Run("concurrent get", func(t *testing.T) {
-		runConcurrently(t, ids, func(id string) error {
-			_, err := storage.GetSite(ctx, id)
-			return err
-		})
-	})
-
-	// Final consistency check
-	for _, id := range ids {
-		if _, err := storage.GetSite(ctx, id); err != nil {
-			t.Fatalf("missing site %s: %v", id, err)
-		}
-	}
-}

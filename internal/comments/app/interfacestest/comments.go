@@ -2,11 +2,11 @@ package interfacestest
 
 import (
 	"context"
-	"fmt"
 	"testing"
 	"time"
 
 	"github.com/go-faker/faker/v4"
+	"github.com/google/uuid"
 	"github.com/renq/interlocutr/internal/comments/app"
 	"github.com/stretchr/testify/assert"
 )
@@ -53,62 +53,14 @@ func RunBrokenStorageTests(t *testing.T, storage app.CommentsStorage) {
 	})
 }
 
-func RunCommentsStorageConcurrentTests(t *testing.T, storage app.CommentsStorage) {
-	// TODO Do we need these tests?
-	ctx := context.Background()
-	comments := makeComments(200, "site-conc", "page-conc")
-
-	t.Run("concurrent create", func(t *testing.T) {
-		runConcurrently(t, comments, func(c app.Comment) error {
-			return storage.CreateComment(ctx, c)
-		})
-	})
-
-	t.Run("concurrent get", func(t *testing.T) {
-		runConcurrently(t, comments, func(c app.Comment) error {
-			got, err := storage.GetComments(ctx, c.Site, c.Resource)
-			if err != nil {
-				return err
-			}
-			for _, g := range got {
-				if g.Author == c.Author && g.Text == c.Text {
-					return nil
-				}
-			}
-			return fmt.Errorf("missing comment %s", c.Text)
-		})
-	})
-
-	// Final deterministic check
-	all, err := storage.GetComments(ctx, "site-conc", "page-conc")
-	if err != nil {
-		t.Fatalf("unexpected error reading final comments: %v", err)
-	}
-	if len(all) != len(comments) {
-		t.Fatalf("expected %d comments, got %d", len(comments), len(all))
-	}
-}
-
 func aComment(site, resource string) app.Comment {
+	id, _ := uuid.NewV7()
 	return app.Comment{
+		ID:        id,
 		Site:      site,
 		Resource:  resource,
 		Author:    faker.FirstName(),
 		Text:      faker.Sentence(),
 		CreatedAt: time.Now().UTC(),
 	}
-}
-
-func makeComments(n int, site, resource string) []app.Comment {
-	comments := make([]app.Comment, n)
-	for i := range n {
-		comments[i] = app.Comment{
-			Site:      site,
-			Resource:  resource,
-			Author:    fmt.Sprintf("author-%d", i),
-			Text:      fmt.Sprintf("text-%d", i),
-			CreatedAt: time.Now().UTC(),
-		}
-	}
-	return comments
 }

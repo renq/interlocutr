@@ -1,4 +1,5 @@
 include .env
+include .env.test
 export
 
 MIGRATIONS_DIR := $(PWD)/migrations/sqlite3

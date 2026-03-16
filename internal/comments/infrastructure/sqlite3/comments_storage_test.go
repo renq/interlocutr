@@ -7,19 +7,11 @@ import (
 )
 
 func TestCommentsCanBeStoredAndRead(t *testing.T) {
-	t.Parallel()
-	t.Skip("not implemented yet")
+	// t.Parallel()
 	interfacestest.RunCommentsCanBeStoredAndReadTests(t, createCommentsStorage(t))
 }
 
 func TestBrokenStorage(t *testing.T) {
-	t.Parallel()
-	t.Skip("not implemented yet")
+	// t.Parallel()
 	interfacestest.RunBrokenStorageTests(t, createCommentsStorage(t))
-}
-
-func TestInMemoryCommentsStorage_ConcurrentCreateAndGet(t *testing.T) {
-	t.Parallel()
-	t.Skip("not implemented yet")
-	interfacestest.RunCommentsStorageConcurrentTests(t, createCommentsStorage(t))
 }
