@@ -34,7 +34,7 @@ type JwtResponse struct {
 // @Accept       application/x-www-form-urlencoded
 // @Param        username  formData  string               false  "login"
 // @Param        password  formData  string               false  "password"
-// @Param        request   body      loginRequest         false "Login credentials"
+// @Param        request   body      LoginRequest         false "Login credentials"
 // @Tags         auth
 // @Produce      json
 // @Success      200       {object}  JwtResponse

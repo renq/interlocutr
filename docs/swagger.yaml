@@ -54,7 +54,7 @@ definitions:
       token:
         type: string
     type: object
-  token.loginRequest:
+  token.LoginRequest:
     properties:
       password:
         type: string
@@ -209,7 +209,7 @@ paths:
         in: body
         name: request
         schema:
-          $ref: '#/definitions/token.loginRequest'
+          $ref: '#/definitions/token.LoginRequest'
       produces:
       - application/json
       responses:

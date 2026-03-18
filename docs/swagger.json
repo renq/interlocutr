@@ -226,7 +226,7 @@
                         "name": "request",
                         "in": "body",
                         "schema": {
-                            "$ref": "#/definitions/token.loginRequest"
+                            "$ref": "#/definitions/token.LoginRequest"
                         }
                     }
                 ],
@@ -334,7 +334,7 @@
                 }
             }
         },
-        "token.loginRequest": {
+        "token.LoginRequest": {
             "type": "object",
             "properties": {
                 "password": {
