@@ -1,30 +1,16 @@
-include .env
-include .env.test
-export
-
-MIGRATIONS_DIR := $(PWD)/migrations/sqlite3
-
-APP_DB ?= sqlite3://$(CURDIR)/test.db
-DBFILE := $(patsubst sqlite3://%,%,$(APP_DB))
-DBFILE := $(shell realpath -m $(DBFILE))
-
-APP_DB := sqlite3://$(DBFILE)
-export APP_DB
-
 .PHONY: prepare test
 
+export MIGRATIONS_DIR := $(shell pwd)/migrations/sqlite3
+export PROD_DB := sqlite3://$(shell pwd)/data/app.db
+export TEST_DB := sqlite3://$(shell pwd)/data/test.db
+
 migrate:
-# installed using: go install -tags 'sqlite3' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
-	migrate \
-		-path=$(MIGRATIONS_DIR) \
-		-database "$(APP_DB)" \
-		up
+	migrate -path="$(MIGRATIONS_DIR)" -database "$(PROD_DB)" up
 
 install-tools:
 	go install -tags 'sqlite3' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
 	go install gotest.tools/gotestsum@latest
 
 test:
-	@echo "using APP_DB=$(APP_DB)"
-	migrate -path=$(MIGRATIONS_DIR) -database "$(APP_DB)" up
-	gotestsum --format testdox
+	migrate -path="$(MIGRATIONS_DIR)" -database "$(TEST_DB)" up
+	@APP_DB=$(TEST_DB) gotestsum --format testdox

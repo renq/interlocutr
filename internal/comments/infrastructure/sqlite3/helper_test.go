@@ -42,10 +42,9 @@ func createCommentsStorage(t *testing.T) app.CommentsStorage {
 
 func connectToTestDB() *sqlx.DB {
 	appDB := os.Getenv("APP_DB")
-
 	dsn := strings.TrimPrefix(appDB, "sqlite3://")
-	db := sqlx.MustConnect("sqlite3", dsn)
 
+	db := sqlx.MustConnect("sqlite3", dsn)
 	db.SetConnMaxIdleTime(5)
 	db.SetMaxOpenConns(10)
 
