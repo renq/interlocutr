@@ -27,5 +27,19 @@ jobs:
     - name: Install build tools
       run: make install-tools
 
+    - name: Lint
+      run: make lint
+
     - name: Test
       run: make test
+
+    - name: Swagger
+      run: make swagger
+
+    - name: Check for uncommitted changes
+      run: |
+        if ! git diff --quiet; then
+          echo "Uncommitted changes found. Please commit all changes."
+          git diff
+          exit 1
+        fi

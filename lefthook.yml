@@ -11,7 +11,7 @@ pre-commit:
       run: golangci-lint run
     swag:
       glob: "*/http/*.go"
-      run: swag init --outputTypes=json,yaml .
+      run: make swagger
     test:
       run: make test
       root: .
@@ -25,6 +25,9 @@ lints:
     lint:
       run: golangci-lint run
       root: .
+    swag:
+      glob: "*/http/*.go"
+      run: make swagger
     test:
       run: make test
       root: .

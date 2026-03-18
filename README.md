@@ -23,6 +23,7 @@ air
 ### Generate swagger
 
 ```
+go install github.com/swaggo/swag/cmd/swag@latest
 swag init --outputTypes=json,yaml .
 ```
 
