@@ -4,9 +4,6 @@ export MIGRATIONS_DIR := $(shell pwd)/migrations/sqlite3
 export PROD_DB := sqlite3://$(shell pwd)/data/app.db
 export TEST_DB := sqlite3://$(shell pwd)/data/test.db
 
-build:
-	go build -v ./...
-
 lint:
 	go fmt ./...
 	golangci-lint run
