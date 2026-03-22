@@ -26,7 +26,7 @@ func RunSitesStorageTests(t *testing.T, storage app.SitesStorage) {
 			Domains: []string{"example.com", "example.org"},
 		}
 
-		_, err := storage.CreateSite(ctx, site)
+		err := storage.CreateSite(ctx, site)
 		assert.NoError(t, err)
 
 		// Act

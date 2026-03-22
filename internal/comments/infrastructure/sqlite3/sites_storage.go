@@ -12,50 +12,52 @@ import (
 	"github.com/renq/interlocutr/internal/comments/app"
 )
 
-type SqlxSitesStorege struct {
+type SqlxSitesStorage struct {
 	db *sqlx.DB
 }
 
 func NewSqliteSitesStorage(db *sqlx.DB) app.SitesStorage {
-	return &SqlxSitesStorege{
+	return &SqlxSitesStorage{
 		db: db,
 	}
 }
 
-func (s *SqlxSitesStorege) CreateSite(ctx context.Context, site app.Site) (string, error) {
-	domains, err := json.Marshal(site.Domains)
-	if err != nil {
-		return "", err // This should never happen, as domains is always a valid slice of strings.
-	}
-
-	params := struct {
-		ID      string `db:"id"`
-		Domains []byte `db:"domains"`
-	}{
-		ID:      site.ID,
-		Domains: domains,
-	}
-
-	query := `INSERT INTO sites (id, domains) VALUES (:id, :domains)`
-	_, err = s.db.NamedExecContext(ctx, query, params)
-
-	// handle sqlite errors
-	if sqliteErr, ok := err.(sqlite3.Error); ok {
-		// already exists
-		if sqliteErr.ExtendedCode == sqlite3.ErrConstraintPrimaryKey {
-			return site.ID, app.ErrorAlreadyExists
+func (s *SqlxSitesStorage) CreateSite(ctx context.Context, site app.Site) error {
+	return RunInTx(s.db, func(tx *sqlx.Tx) error {
+		domains, err := json.Marshal(site.Domains)
+		if err != nil {
+			return err // This should never happen, as domains is always a valid slice of strings.
 		}
-		return site.ID, errors.New("unexpected sqlite error: " + sqliteErr.Error())
-	}
 
-	if err != nil {
-		return site.ID, err
-	}
+		params := struct {
+			ID      string `db:"id"`
+			Domains []byte `db:"domains"`
+		}{
+			ID:      site.ID,
+			Domains: domains,
+		}
 
-	return site.ID, nil
+		query := `INSERT INTO sites (id, domains) VALUES (:id, :domains)`
+		_, err = s.db.NamedExecContext(ctx, query, params)
+
+		// handle sqlite errors
+		if sqliteErr, ok := err.(sqlite3.Error); ok {
+			// already exists
+			if sqliteErr.ExtendedCode == sqlite3.ErrConstraintPrimaryKey {
+				return app.ErrorAlreadyExists
+			}
+			return errors.New("unexpected sqlite error: " + sqliteErr.Error())
+		}
+
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
 }
 
-func (s *SqlxSitesStorege) GetSite(ctx context.Context, ID string) (app.Site, error) {
+func (s *SqlxSitesStorage) GetSite(ctx context.Context, ID string) (app.Site, error) {
 	site := app.Site{}
 
 	var row struct {

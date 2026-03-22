@@ -7,11 +7,11 @@ import (
 )
 
 func TestCommentsCanBeStoredAndRead(t *testing.T) {
-	// t.Parallel()
+	t.Parallel()
 	interfacestest.RunCommentsCanBeStoredAndReadTests(t, createCommentsStorage(t))
 }
 
 func TestBrokenStorage(t *testing.T) {
-	// t.Parallel()
+	t.Parallel()
 	interfacestest.RunBrokenStorageTests(t, createCommentsStorage(t))
 }

@@ -2,8 +2,12 @@ package app
 
 import "context"
 
+type Transactor interface {
+	Run(ctx context.Context, fn func(ctx context.Context) error) error
+}
+
 type SitesStorage interface {
-	CreateSite(ctx context.Context, site Site) (string, error)
+	CreateSite(ctx context.Context, site Site) error
 	GetSite(ctx context.Context, ID string) (Site, error)
 }
 

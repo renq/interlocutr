@@ -25,45 +25,47 @@ func NewSqliteCommentsStorage(db *sqlx.DB) app.CommentsStorage {
 }
 
 func (s *SqlxCommentsStorage) CreateComment(ctx context.Context, comment app.Comment) error {
-	pollute := ""
-	if s.broken {
-		pollute = "pollute"
-	}
-
-	params := struct {
-		ID        uuid.UUID `db:"id"`
-		Site      string    `db:"site"`
-		Resource  string    `db:"resource"`
-		Author    string    `db:"author"`
-		Text      string    `db:"text"`
-		CreatedAt time.Time `db:"created_at"`
-	}{
-		ID:        comment.ID,
-		Site:      comment.Site,
-		Resource:  comment.Resource,
-		Author:    comment.Author,
-		Text:      comment.Text,
-		CreatedAt: comment.CreatedAt,
-	}
-
-	query := pollute + `INSERT INTO comments (id, site, resource, author, text, created_at) 
-	VALUES (:id, :site, :resource, :author, :text, :created_at)`
-	_, err := s.db.NamedExecContext(ctx, query, params)
-
-	// handle sqlite errors
-	if sqliteErr, ok := err.(sqlite3.Error); ok {
-		// already exists
-		if sqliteErr.ExtendedCode == sqlite3.ErrConstraintPrimaryKey {
-			return app.ErrorAlreadyExists
+	return RunInTx(s.db, func(tx *sqlx.Tx) error {
+		pollute := ""
+		if s.broken {
+			pollute = "pollute"
 		}
-		return errors.New("unexpected sqlite error: " + sqliteErr.Error())
-	}
 
-	if err != nil {
-		return err
-	}
+		params := struct {
+			ID        uuid.UUID `db:"id"`
+			Site      string    `db:"site"`
+			Resource  string    `db:"resource"`
+			Author    string    `db:"author"`
+			Text      string    `db:"text"`
+			CreatedAt time.Time `db:"created_at"`
+		}{
+			ID:        comment.ID,
+			Site:      comment.Site,
+			Resource:  comment.Resource,
+			Author:    comment.Author,
+			Text:      comment.Text,
+			CreatedAt: comment.CreatedAt,
+		}
 
-	return nil
+		query := pollute + `INSERT INTO comments (id, site, resource, author, text, created_at) 
+	VALUES (:id, :site, :resource, :author, :text, :created_at)`
+		_, err := s.db.NamedExecContext(ctx, query, params)
+
+		// handle sqlite errors
+		if sqliteErr, ok := err.(sqlite3.Error); ok {
+			// already exists
+			if sqliteErr.ExtendedCode == sqlite3.ErrConstraintPrimaryKey {
+				return app.ErrorAlreadyExists
+			}
+			return errors.New("unexpected sqlite error: " + sqliteErr.Error())
+		}
+
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
 }
 
 func (s *SqlxCommentsStorage) GetComments(ctx context.Context, site, resource string) ([]app.Comment, error) {

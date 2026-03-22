@@ -26,14 +26,14 @@ type GetSiteResponse struct {
 }
 
 func (a *App) CreateSite(ctx context.Context, command CreateSiteRequest) (CreateSiteResponse, error) {
-	id, err := a.SitesStorage.CreateSite(ctx, Site(command))
+	err := a.SitesStorage.CreateSite(ctx, Site(command))
 
 	if err != nil {
 		return CreateSiteResponse{}, err
 	}
 
 	return CreateSiteResponse{
-		ID: id,
+		ID: command.ID,
 	}, nil
 }
 

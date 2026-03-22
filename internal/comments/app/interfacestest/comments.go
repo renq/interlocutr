@@ -15,6 +15,8 @@ func RunCommentsCanBeStoredAndReadTests(t *testing.T, storage app.CommentsStorag
 	ctx := context.Background()
 
 	t.Run("in a single page and post", func(t *testing.T) {
+		t.Parallel()
+
 		comment1 := aComment("site1", "page1")
 		comment2 := aComment("site1", "page1")
 		assert.NoError(t, storage.CreateComment(ctx, comment1))
@@ -25,6 +27,8 @@ func RunCommentsCanBeStoredAndReadTests(t *testing.T, storage app.CommentsStorag
 	})
 
 	t.Run("can read comments only for a single site and post", func(t *testing.T) {
+		t.Parallel()
+
 		comment1 := aComment("site2", "page2_1")
 		comment2 := aComment("site3", "page3_1")
 		assert.NoError(t, storage.CreateComment(ctx, comment1))
