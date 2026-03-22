@@ -11,31 +11,38 @@ Before I forgot:
 ### Run tests:
 
 ```
-gotestsum --format testdox --watch
+make test
+```
+
+### Run integration tests with real DB
+
+```
+make test-integration
 ```
 
 ### Run server with live reload
 
 ```
-air
+make run
 ```
 
 ### Generate swagger
 
 ```
-go install github.com/swaggo/swag/cmd/swag@latest
-swag init --outputTypes=json,yaml .
+make swagger
 ```
 
 ## Quality tools
 
 ```
-go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-go install github.com/evilmartians/lefthook@latest
-
+make install-tools
 lefthook run lints
+make lint
+```
 
-# coverage
+## Coverage
+
+```
 go test -v -coverprofile=cover.out -coverpkg=./... ./... && go tool cover -html=cover.out
 ```
 
@@ -51,6 +58,6 @@ https://dev.to/jones_charles_ad50858dbc0/sqlx-your-go-to-database-toolkit-for-go
 
 go-callvis .
 
-### Transactions in Go
+### How to do transactions in Go
 
 https://threedots.tech/post/database-transactions-in-go/

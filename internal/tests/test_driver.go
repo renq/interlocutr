@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 	"time"
@@ -38,7 +39,7 @@ type TestDriver struct {
 }
 
 func NewTestDriver(t *testing.T) TestDriver {
-	app := factory.BuildApp("")
+	app := factory.BuildApp(os.Getenv("TEST_INTEGRATION_DB"))
 	return TestDriver{
 		app: app,
 		t:   t,
