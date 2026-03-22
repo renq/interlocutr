@@ -1,5 +1,6 @@
 # The backlog
 
+1. Add logs (for echo errors)
 1. Test logic with in memory, use sql in the real app.
 1. Create JS code to render comments. Maybe we can skip JS and use something like https://github.com/donseba/go-htmx?
 1. CQRS. What about creating a separate domain and query structures and removing getXXX from repositories?

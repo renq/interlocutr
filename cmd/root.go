@@ -110,7 +110,7 @@ func NewServer(application *app.App) *echo.Echo {
 // @externalDocs.description  OpenAPI
 // @externalDocs.url          https://swagger.io/resources/open-api/
 func StartServer() {
-	e := NewServer(factory.BuildApp())
+	e := NewServer(factory.BuildApp(os.Getenv("APP_DB")))
 
 	err := e.Start(":" + port)
 	if err != nil {

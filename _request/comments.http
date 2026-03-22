@@ -4,17 +4,28 @@ Content-Type: application/x-www-form-urlencoded
 
 username=admin&password=secret
 
-###
+### Create site
 
-POST http://localhost:8080/api/test/page-1/comments
+POST http://localhost:8080/api/admin/site
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSm9uIFNub3ciLCJhZG1pbiI6dHJ1ZSwiZXhwIjoxNzc0NDY4OTc1fQ.h0suzYHc8dNdUdi3UUZftHpP6sg52kae0iaqRNDP9Bo
 Content-Type: application/json
 
 {
-    "author": "Michał 2",
-    "text": "Jakiś tekst 2"
+    "domains": ["lipek.net"],
+    "id": "lipek.net"
 }
 
 ###
 
-GET http://localhost:8080/api/test/page-1/comments
+POST http://localhost:8080/api/lipek.net/page-1/comments
+Content-Type: application/json
+
+{
+    "author": "Michał",
+    "text": "Sample text 3"
+}
+
+###
+
+GET http://localhost:8080/api/lipek.net/page-1/comments
 Content-Type: application/json

@@ -66,7 +66,7 @@ func (a *App) CreateComment(ctx context.Context, command CreateCommentRequest) (
 		return CreateCommentResponse{}, err
 	}
 
-	return CreateCommentResponse{}, a.CommentsStorage.CreateComment(ctx, Comment{
+	return CreateCommentResponse{ID: ID}, a.CommentsStorage.CreateComment(ctx, Comment{
 		ID:        ID,
 		Site:      command.Site,
 		Resource:  command.Resource,

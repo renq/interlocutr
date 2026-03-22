@@ -38,7 +38,7 @@ type TestDriver struct {
 }
 
 func NewTestDriver(t *testing.T) TestDriver {
-	app := factory.BuildApp()
+	app := factory.BuildApp("")
 	return TestDriver{
 		app: app,
 		t:   t,

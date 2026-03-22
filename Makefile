@@ -23,3 +23,7 @@ test:
 
 swagger:
 	swag init --outputTypes=json,yaml .
+
+run:
+	migrate -path="$(MIGRATIONS_DIR)" -database "$(PROD_DB)" up
+	@APP_DB=$(PROD_DB) air

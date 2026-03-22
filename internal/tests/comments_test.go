@@ -33,6 +33,7 @@ func TestCreateAndGetComments(t *testing.T) {
 
 	// Assert 1
 	assert.Equal(t, http.StatusCreated, createCommentResponse.StatusCode)
+	assert.Equal(t, IDs[0], createCommentResponse.Response.ID)
 
 	// Act 2
 	getCommentsResponse := driver.GetComments(site.ID, "1")
