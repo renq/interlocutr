@@ -2,6 +2,7 @@ package tests
 
 import (
 	"net/http"
+	"strings"
 	"testing"
 	"time"
 
@@ -25,7 +26,7 @@ func TestCreateAndGetComments(t *testing.T) {
 	// Arrange - add site
 	site := aSiteRequest()
 	createSiteResponse := driver.CreateSite(site)
-	assert.Equal(t, createSiteResponse.StatusCode, http.StatusCreated)
+	assert.Equal(t, http.StatusCreated, createSiteResponse.StatusCode, createSiteResponse.RawResponse)
 
 	// Act 1 - create comment
 	newComment := aCommentRequest(site.ID, "1")
@@ -114,9 +115,11 @@ func TestCommentCanBeAddedOnlyToValidSite(t *testing.T) {
 }
 
 func aSiteRequest() app.CreateSiteRequest {
+	siteDomain := faker.DomainName()
+	siteID := strings.ReplaceAll(siteDomain, ".", "-")
 	return app.CreateSiteRequest{
-		ID:      faker.Username(),
-		Domains: []string{faker.DomainName()},
+		ID:      siteID,
+		Domains: []string{siteDomain},
 	}
 }
 

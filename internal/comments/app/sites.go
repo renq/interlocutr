@@ -1,6 +1,9 @@
 package app
 
-import "context"
+import (
+	"context"
+	"log/slog"
+)
 
 type Site struct {
 	ID      string
@@ -29,6 +32,7 @@ func (a *App) CreateSite(ctx context.Context, command CreateSiteRequest) (Create
 	err := a.SitesStorage.CreateSite(ctx, Site(command))
 
 	if err != nil {
+		slog.ErrorContext(ctx, "Error while adding site", "Error", err)
 		return CreateSiteResponse{}, err
 	}
 

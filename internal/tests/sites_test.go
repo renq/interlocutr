@@ -2,8 +2,10 @@ package tests
 
 import (
 	"net/http"
+	"strings"
 	"testing"
 
+	"github.com/go-faker/faker/v4"
 	"github.com/renq/interlocutr/internal/comments/app"
 	"github.com/stretchr/testify/assert"
 )
@@ -15,7 +17,7 @@ func TestGetSites(t *testing.T) {
 		driver := NewTestDriver(t)
 
 		createResponse := driver.CreateSite(app.CreateSiteRequest{
-			ID:      "test-site",
+			ID:      "anything",
 			Domains: []string{"interlocutr.lipek.net"},
 		})
 
@@ -27,24 +29,27 @@ func TestGetSites(t *testing.T) {
 		driver := NewTestDriver(t)
 		driver.LoginAsAdmin()
 
+		siteDomain := faker.DomainName()
+		siteID := strings.ReplaceAll(siteDomain, ".", "-")
+
 		// Act
 		createResponse := driver.CreateSite(app.CreateSiteRequest{
-			ID:      "test-site",
-			Domains: []string{"interlocutr.lipek.net"},
+			ID:      siteID,
+			Domains: []string{siteDomain},
 		})
 
 		// Assert
 		assert.Equal(t, http.StatusCreated, createResponse.StatusCode)
-		assert.Equal(t, "test-site", createResponse.Response.ID)
+		assert.Equal(t, siteID, createResponse.Response.ID)
 
 		// Act
-		getResponse := driver.GetSite("test-site")
+		getResponse := driver.GetSite(siteID)
 
 		// Assert
 		assert.Equal(t, http.StatusOK, getResponse.StatusCode)
 		assert.Equal(t, app.GetSiteResponse{
-			ID:      "test-site",
-			Domains: []string{"interlocutr.lipek.net"},
+			ID:      siteID,
+			Domains: []string{siteDomain},
 		}, getResponse.Response)
 	})
 }

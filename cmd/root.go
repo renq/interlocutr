@@ -96,6 +96,9 @@ func NewServer(application *app.App) *echo.Echo {
 
 	commentsHttp.NewSitesHandlers(admin, application)
 
+	// Demo
+	e.Static("/assets", "assets")
+
 	return e
 }
 

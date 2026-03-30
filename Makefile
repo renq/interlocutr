@@ -2,8 +2,8 @@
 
 export MIGRATIONS_DIR := $(shell pwd)/migrations/sqlite3
 export PROD_DB := sqlite3://$(shell pwd)/data/app.db
-export TEST_DB := sqlite3://$(shell pwd)/data/test.db
-export TEST_INTEGRATION_DB := sqlite3://$(shell pwd)/data/test_integration.db
+export TEST_DB_FILE := sqlite3://$(shell pwd)/data/test.db
+export TEST_INTEGRATION_DB_FILE := sqlite3://$(shell pwd)/data/test_integration.db
 
 lint:
 	go fmt ./...
@@ -19,12 +19,12 @@ install-tools:
 	go install -tags 'sqlite3' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
 
 test:
-	migrate -path="$(MIGRATIONS_DIR)" -database "$(TEST_DB)" up
-	@APP_DB=$(TEST_DB) gotestsum --format testdox
+	migrate -path="$(MIGRATIONS_DIR)" -database "$(TEST_DB_FILE)" up
+	TEST_DB=$(TEST_DB_FILE) gotestsum --format testdox
 
 test-integration:
-	migrate -path="$(MIGRATIONS_DIR)" -database "$(TEST_INTEGRATION_DB)" up
-	@APP_DB=$(TEST_INTEGRATION_DB) gotestsum --format testdox ./internal/tests
+	migrate -path="$(MIGRATIONS_DIR)" -database "$(TEST_INTEGRATION_DB_FILE)" up
+	TEST_INTEGRATION_DB=$(TEST_INTEGRATION_DB_FILE) gotestsum --format testdox ./internal/tests
 
 swagger:
 	swag init --outputTypes=json,yaml .
@@ -32,3 +32,9 @@ swagger:
 run:
 	migrate -path="$(MIGRATIONS_DIR)" -database "$(PROD_DB)" up
 	@APP_DB=$(PROD_DB) air
+
+generate-css:
+	cd assets; npm install; npx tailwindcss --config tailwind.config.js -i input.css -o interlocutr.css  --minify
+
+build: generate-css
+	go build

@@ -41,7 +41,7 @@ func createCommentsStorage(t *testing.T) app.CommentsStorage {
 }
 
 func connectToTestDB() *sqlx.DB {
-	appDB := os.Getenv("APP_DB")
+	appDB := os.Getenv("TEST_DB")
 	dsn := strings.TrimPrefix(appDB, "sqlite3://")
 
 	db := sqlx.MustConnect("sqlite3", dsn)
